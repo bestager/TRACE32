@@ -1,13 +1,53 @@
 #!/usr/bin/env python3
 """
 Cursor AI 사용 가이드 DOCX 생성 스크립트
-초보자 대상 한글 문서 (10장 미만)
+초보자 대상 한글 문서 (10장 미만) - 스크린샷 참조 URL 포함 버전
 """
 
 from docx import Document
 from docx.shared import Pt, Cm, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+import copy
+
+def add_hyperlink(paragraph, url, text):
+    """python-docx에 하이퍼링크를 추가하는 헬퍼 함수"""
+    part = paragraph.part
+    r_id = part.relate_to(url, 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink', is_external=True)
+    hyperlink = OxmlElement('w:hyperlink')
+    hyperlink.set(qn('r:id'), r_id)
+    new_run = OxmlElement('w:r')
+    rPr = OxmlElement('w:rPr')
+    c = OxmlElement('w:color')
+    c.set(qn('w:val'), '0563C1')
+    rPr.append(c)
+    u = OxmlElement('w:u')
+    u.set(qn('w:val'), 'single')
+    rPr.append(u)
+    sz = OxmlElement('w:sz')
+    sz.set(qn('w:val'), '20')
+    rPr.append(sz)
+    new_run.append(rPr)
+    new_run.text = text
+    hyperlink.append(new_run)
+    paragraph._p.append(hyperlink)
+    return paragraph
+
+def add_screenshot_ref(doc, label, url, description=None):
+    """스크린샷 참조 링크를 문서에 추가"""
+    p = doc.add_paragraph()
+    run = p.add_run(f'📸 {label}: ')
+    run.font.size = Pt(10)
+    run.font.color.rgb = RGBColor(0x44, 0x44, 0x44)
+    add_hyperlink(p, url, url)
+    if description:
+        p2 = doc.add_paragraph()
+        run2 = p2.add_run(f'   ({description})')
+        run2.font.size = Pt(9)
+        run2.font.italic = True
+        run2.font.color.rgb = RGBColor(0x88, 0x88, 0x88)
 
 doc = Document()
 
@@ -20,7 +60,7 @@ font.size = Pt(11)
 for i in range(1, 4):
     heading_style = doc.styles[f'Heading {i}']
     heading_style.font.name = 'Malgun Gothic'
-    heading_style.font.color.rgb = RGBColor(0x7B, 0x2D, 0x8E)  # Cursor Purple
+    heading_style.font.color.rgb = RGBColor(0x7B, 0x2D, 0x8E)
 
 # ─── 페이지 설정 ───
 for section in doc.sections:
@@ -123,10 +163,9 @@ for i, (feature, desc_text) in enumerate(data):
     table.rows[i + 1].cells[1].text = desc_text
 
 doc.add_paragraph('')
-p = doc.add_paragraph()
-run = p.add_run('[스크린샷] Cursor 공식 홈페이지 (cursor.com)')
-run.font.italic = True
-run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+add_screenshot_ref(doc, 'Cursor 공식 홈페이지',
+    'https://cursor.com',
+    '메인 페이지에서 Cursor의 전체 인터페이스와 기능 소개를 확인할 수 있습니다')
 
 doc.add_page_break()
 
@@ -178,43 +217,53 @@ doc.add_page_break()
 # ════════════════════════════════════════
 doc.add_heading('3. 설치 방법 (단계별 가이드)', level=1)
 
-steps = [
-    ('Step 1: 다운로드 페이지 접속',
-     '웹 브라우저를 열고 cursor.com 에 접속합니다. '
-     '메인 페이지에서 "Download" 버튼을 클릭합니다. '
-     '운영체제가 자동으로 감지되어 맞는 설치 파일이 다운로드됩니다.',
-     '[스크린샷] cursor.com 메인 페이지의 Download 버튼 위치'),
+# Step 1
+doc.add_heading('Step 1: 다운로드 페이지 접속', level=2)
+doc.add_paragraph(
+    '웹 브라우저를 열고 cursor.com 에 접속합니다. '
+    '메인 페이지에서 "Download" 버튼을 클릭합니다. '
+    '운영체제가 자동으로 감지되어 맞는 설치 파일이 다운로드됩니다.'
+)
+add_screenshot_ref(doc, '다운로드 페이지',
+    'https://www.cursor.com/downloads',
+    'OS별 다운로드 버튼이 있는 공식 다운로드 페이지')
 
-    ('Step 2: 설치 프로그램 실행',
-     '다운로드된 설치 파일을 실행합니다.\n\n'
-     '• Windows: .exe 파일 실행 → 설치 마법사를 따라 "다음" 클릭\n'
-     '• macOS: .dmg 파일 열기 → Cursor 아이콘을 Applications 폴더로 드래그\n'
-     '  (보안 경고가 나타나면: 시스템 환경설정 → 보안 및 개인 정보 → "확인 없이 열기" 클릭)\n'
-     '• Linux: AppImage 또는 .deb 파일로 설치',
-     '[스크린샷] macOS에서 Cursor를 Applications로 드래그하는 화면'),
+# Step 2
+doc.add_heading('Step 2: 설치 프로그램 실행', level=2)
+doc.add_paragraph(
+    '다운로드된 설치 파일을 실행합니다.\n\n'
+    '• Windows: .exe 파일 실행 → 설치 마법사를 따라 "다음" 클릭\n'
+    '• macOS: .dmg 파일 열기 → Cursor 아이콘을 Applications 폴더로 드래그\n'
+    '  (보안 경고가 나타나면: 시스템 환경설정 → 보안 및 개인 정보 → "확인 없이 열기" 클릭)\n'
+    '• Linux: AppImage 또는 .deb 파일로 설치'
+)
+add_screenshot_ref(doc, '설치 과정 상세 가이드 (스크린샷 포함)',
+    'https://learn-cursor.com/en/wiki/user-guide/install',
+    'OS별 설치 과정의 단계별 스크린샷을 확인할 수 있습니다')
 
-    ('Step 3: 계정 생성 및 로그인',
-     'Cursor를 처음 실행하면 로그인 화면이 나타납니다.\n\n'
-     '1. "Sign Up" 버튼을 클릭합니다.\n'
-     '2. Google, GitHub, 또는 이메일 중 하나로 가입합니다.\n'
-     '3. 가입이 완료되면 자동으로 무료 Hobby 플랜이 적용됩니다.',
-     '[스크린샷] Cursor 로그인/가입 화면'),
+# Step 3
+doc.add_heading('Step 3: 계정 생성 및 로그인', level=2)
+doc.add_paragraph(
+    'Cursor를 처음 실행하면 로그인 화면이 나타납니다.\n\n'
+    '1. "Sign Up" 버튼을 클릭합니다.\n'
+    '2. Google, GitHub, 또는 이메일 중 하나로 가입합니다.\n'
+    '3. 가입이 완료되면 자동으로 무료 Hobby 플랜이 적용됩니다.'
+)
+add_screenshot_ref(doc, '첫 실행 및 로그인 가이드 (스크린샷 포함)',
+    'https://daily.dev/blog/setup-cursor-first-time',
+    '로그인 화면, 초기 설정 등 단계별 스크린샷이 포함된 상세 가이드')
 
-    ('Step 4: 초기 환경 설정',
-     'VS Code를 사용한 적이 있다면 "Import VS Code Extensions"를 선택하여 '
-     '기존 테마, 키 바인딩, 확장 프로그램을 가져올 수 있습니다.\n\n'
-     '초보자라면 "Start from Scratch (새로 시작)"를 선택하세요.\n'
-     '이어서 밝은 테마(Light) 또는 어두운 테마(Dark)를 선택합니다.',
-     '[스크린샷] 초기 설정 화면 (Import / Start from Scratch)'),
-]
-
-for title_text, content, screenshot in steps:
-    doc.add_heading(title_text, level=2)
-    doc.add_paragraph(content)
-    p = doc.add_paragraph()
-    run = p.add_run(screenshot)
-    run.font.italic = True
-    run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+# Step 4
+doc.add_heading('Step 4: 초기 환경 설정', level=2)
+doc.add_paragraph(
+    'VS Code를 사용한 적이 있다면 "Import VS Code Extensions"를 선택하여 '
+    '기존 테마, 키 바인딩, 확장 프로그램을 가져올 수 있습니다.\n\n'
+    '초보자라면 "Start from Scratch (새로 시작)"를 선택하세요.\n'
+    '이어서 밝은 테마(Light) 또는 어두운 테마(Dark)를 선택합니다.'
+)
+add_screenshot_ref(doc, '초기 설정 화면 상세 (스크린샷 포함)',
+    'https://www.bannerbear.com/blog/how-to-get-started-with-cursor-ide-a-complete-setup-guide-for-developers/',
+    'Import/Start from Scratch 선택 화면, 테마 선택 등 초기 설정 스크린샷')
 
 doc.add_page_break()
 
@@ -259,10 +308,9 @@ doc.add_paragraph(
     '초보자라면 기본 설정 그대로 사용하시면 됩니다.'
 )
 
-p = doc.add_paragraph()
-run = p.add_run('[스크린샷] Cursor 설정에서 AI 모델 선택 화면')
-run.font.italic = True
-run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+add_screenshot_ref(doc, 'AI 모델 설정 공식 문서',
+    'https://docs.cursor.com/settings/models',
+    'AI 모델 선택 및 설정 방법에 대한 공식 문서')
 
 doc.add_page_break()
 
@@ -286,10 +334,9 @@ layout_items = [
 for item in layout_items:
     doc.add_paragraph(item, style='List Bullet')
 
-p = doc.add_paragraph()
-run = p.add_run('[스크린샷] Cursor 전체 화면 구성 (사이드바, 편집영역, AI채팅, 터미널)]')
-run.font.italic = True
-run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+add_screenshot_ref(doc, 'Cursor 화면 구성 상세 (스크린샷 포함)',
+    'https://docs.cursor.com/get-started/overview',
+    'Cursor의 전체 화면 레이아웃 및 각 영역 설명')
 
 doc.add_heading('AI 모드 종류', level=2)
 doc.add_paragraph('Cursor의 AI 채팅에는 4가지 모드가 있습니다.')
@@ -310,6 +357,10 @@ for i, (mode, desc_text, situation) in enumerate(modes):
     table4.rows[i + 1].cells[1].text = desc_text
     table4.rows[i + 1].cells[2].text = situation
 
+add_screenshot_ref(doc, 'AI 모드 공식 문서',
+    'https://docs.cursor.com/chat/overview',
+    '각 AI 모드의 상세 설명과 사용법')
+
 doc.add_page_break()
 
 # ════════════════════════════════════════
@@ -324,11 +375,9 @@ doc.add_paragraph(
     '• Esc 키: 제안을 취소\n'
     '• 일반 자동완성과 다른 점: 프로젝트 전체 맥락을 이해하여 더 정확한 제안을 합니다.'
 )
-
-p = doc.add_paragraph()
-run = p.add_run('[스크린샷] Cursor Tab이 코드를 제안하는 모습 (회색 텍스트로 표시)]')
-run.font.italic = True
-run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+add_screenshot_ref(doc, 'Cursor Tab 기능 상세 (스크린샷 포함)',
+    'https://docs.cursor.com/tab/overview',
+    'Cursor Tab 자동완성 기능의 동작 방식과 스크린샷')
 
 doc.add_heading('6-2. 인라인 편집 (Cmd+K / Ctrl+K)', level=2)
 doc.add_paragraph(
@@ -339,6 +388,9 @@ doc.add_paragraph(
     '   예: "이 함수에 에러 처리를 추가해줘"\n'
     '4. AI가 선택 영역을 자동으로 수정합니다.'
 )
+add_screenshot_ref(doc, 'Cmd+K 인라인 편집 상세',
+    'https://docs.cursor.com/cmdk/overview',
+    'Cmd+K 기능의 사용법 및 인라인 편집 스크린샷')
 
 doc.add_heading('6-3. AI 채팅 (Cmd+L / Ctrl+L)', level=2)
 doc.add_paragraph(
@@ -360,11 +412,9 @@ doc.add_paragraph(
     '• @Docs: 공식 문서를 참조하여 답변\n\n'
     '예시: "@index.html 이 파일에 다크모드 토글 버튼을 추가해줘"'
 )
-
-p = doc.add_paragraph()
-run = p.add_run('[스크린샷] @ 멘션으로 파일을 참조하는 AI 채팅 화면')
-run.font.italic = True
-run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+add_screenshot_ref(doc, '@ 멘션 및 컨텍스트 기능 상세',
+    'https://docs.cursor.com/chat/context',
+    '채팅에서 @ 기호로 파일, 폴더, 웹 등을 참조하는 방법 스크린샷')
 
 doc.add_heading('6-5. 에이전트 모드', level=2)
 doc.add_paragraph(
@@ -374,6 +424,9 @@ doc.add_paragraph(
     '• 에러 발생 시 자동으로 디버깅 및 재시도\n'
     '• 작업 진행 상황을 실시간으로 표시'
 )
+add_screenshot_ref(doc, 'Agent 모드 공식 문서',
+    'https://docs.cursor.com/chat/agent',
+    'Agent 모드의 동작 방식과 기능 스크린샷')
 
 doc.add_page_break()
 
@@ -421,10 +474,12 @@ doc.add_paragraph(
     '   예: "배경색을 파란색으로 바꿔줘" 또는 "퍼센트 계산 기능도 추가해줘"'
 )
 
-p = doc.add_paragraph()
-run = p.add_run('[스크린샷] 완성된 계산기 앱이 브라우저에서 실행되는 모습')
-run.font.italic = True
-run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+add_screenshot_ref(doc, '초보자 실습 튜토리얼 (영상 포함)',
+    'https://www.codecademy.com/article/how-to-use-cursor-ai-a-complete-guide-with-practical-examples',
+    'Cursor를 활용한 실전 프로젝트 예제와 단계별 스크린샷')
+add_screenshot_ref(doc, 'Cursor 초보자 튜토리얼 2026',
+    'https://www.nxcode.io/resources/news/cursor-tutorial-beginners-2026',
+    '2026년 최신 Cursor 초보자 가이드 (스크린샷 다수 포함)')
 
 doc.add_page_break()
 
@@ -451,6 +506,10 @@ for i, (plan, price, desc_text) in enumerate(plans):
     table5.rows[i + 1].cells[2].text = desc_text
 
 doc.add_paragraph('')
+add_screenshot_ref(doc, '요금제 상세 비교 페이지',
+    'https://www.cursor.com/pricing',
+    '각 플랜의 상세 기능 비교 및 최신 가격 정보')
+
 p = doc.add_paragraph()
 run = p.add_run('💡 초보자 팁: 무료 Hobby 플랜으로 시작하세요! '
                 '월 50회 요청만으로도 학습용으로 충분합니다.')
@@ -504,15 +563,21 @@ for question, answer in faqs:
 doc.add_paragraph('')
 
 # 참고 자료
-doc.add_heading('참고 자료', level=2)
+doc.add_heading('참고 자료 (스크린샷 포함 가이드)', level=2)
 refs = [
-    '공식 웹사이트: cursor.com',
-    '공식 문서: docs.cursor.com',
-    'Cursor 포럼: forum.cursor.com',
-    '초보자 튜토리얼: codecademy.com/article/how-to-use-cursor-ai',
+    ('공식 웹사이트', 'https://cursor.com'),
+    ('공식 문서 (스크린샷 포함)', 'https://docs.cursor.com'),
+    ('초보자 설치 가이드 (상세 스크린샷)', 'https://daily.dev/blog/setup-cursor-first-time'),
+    ('완전 초보자 설정 가이드 (스크린샷 포함)', 'https://www.bannerbear.com/blog/how-to-get-started-with-cursor-ide-a-complete-setup-guide-for-developers/'),
+    ('Codecademy 실전 가이드', 'https://www.codecademy.com/article/how-to-use-cursor-ai-a-complete-guide-with-practical-examples'),
+    ('2026 최신 초보자 튜토리얼', 'https://www.nxcode.io/resources/news/cursor-tutorial-beginners-2026'),
+    ('Cursor 포럼 (커뮤니티)', 'https://forum.cursor.com'),
 ]
-for ref in refs:
-    doc.add_paragraph(ref, style='List Bullet')
+for label, url in refs:
+    p = doc.add_paragraph(style='List Bullet')
+    run = p.add_run(f'{label}: ')
+    run.font.bold = True
+    add_hyperlink(p, url, url)
 
 # ─── 저장 ───
 output_path = '/home/user/TRACE32/Cursor_AI_사용가이드_초보자용.docx'

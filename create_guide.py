@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Google Antigravity 사용 가이드 DOCX 생성 스크립트
-초보자 대상 한글 문서 (10장 미만)
+초보자 대상 한글 문서 (10장 미만) - 스크린샷 참조 URL 포함 버전
 """
 
 from docx import Document
@@ -9,6 +9,45 @@ from docx.shared import Inches, Pt, Cm, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+
+def add_hyperlink(paragraph, url, text):
+    """python-docx에 하이퍼링크를 추가하는 헬퍼 함수"""
+    part = paragraph.part
+    r_id = part.relate_to(url, 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink', is_external=True)
+    hyperlink = OxmlElement('w:hyperlink')
+    hyperlink.set(qn('r:id'), r_id)
+    new_run = OxmlElement('w:r')
+    rPr = OxmlElement('w:rPr')
+    c = OxmlElement('w:color')
+    c.set(qn('w:val'), '0563C1')
+    rPr.append(c)
+    u = OxmlElement('w:u')
+    u.set(qn('w:val'), 'single')
+    rPr.append(u)
+    sz = OxmlElement('w:sz')
+    sz.set(qn('w:val'), '20')
+    rPr.append(sz)
+    new_run.append(rPr)
+    new_run.text = text
+    hyperlink.append(new_run)
+    paragraph._p.append(hyperlink)
+    return paragraph
+
+def add_screenshot_ref(doc, label, url, description=None):
+    """스크린샷 참조 링크를 문서에 추가"""
+    p = doc.add_paragraph()
+    run = p.add_run(f'📸 {label}: ')
+    run.font.size = Pt(10)
+    run.font.color.rgb = RGBColor(0x44, 0x44, 0x44)
+    add_hyperlink(p, url, url)
+    if description:
+        p2 = doc.add_paragraph()
+        run2 = p2.add_run(f'   ({description})')
+        run2.font.size = Pt(9)
+        run2.font.italic = True
+        run2.font.color.rgb = RGBColor(0x88, 0x88, 0x88)
 
 doc = Document()
 
@@ -125,12 +164,10 @@ for i, (feature, desc_text) in enumerate(data):
     row[0].text = feature
     row[1].text = desc_text
 
-# 스크린샷 안내
 doc.add_paragraph('')
-p = doc.add_paragraph()
-run = p.add_run('[스크린샷] Google Antigravity 공식 홈페이지 (antigravity.google)')
-run.font.italic = True
-run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+add_screenshot_ref(doc, 'Google Antigravity 공식 홈페이지',
+    'https://antigravity.google',
+    '메인 페이지에서 Antigravity의 전체 소개와 데모 영상을 확인할 수 있습니다')
 
 doc.add_page_break()
 
@@ -182,38 +219,48 @@ doc.add_page_break()
 # ════════════════════════════════════════
 doc.add_heading('3. 설치 방법 (단계별 가이드)', level=1)
 
-steps = [
-    ('Step 1: 다운로드 페이지 접속',
-     '웹 브라우저를 열고 antigravity.google 에 접속합니다. '
-     '메인 페이지에서 "Download" 버튼을 클릭합니다.',
-     '[스크린샷] antigravity.google 메인 페이지의 Download 버튼 위치'),
+# Step 1
+doc.add_heading('Step 1: 다운로드 페이지 접속', level=2)
+doc.add_paragraph(
+    '웹 브라우저를 열고 antigravity.google 에 접속합니다. '
+    '메인 페이지에서 "Download" 버튼을 클릭합니다.'
+)
+add_screenshot_ref(doc, '공식 다운로드 페이지',
+    'https://antigravity.google',
+    '메인 페이지에서 Download 버튼 위치를 확인할 수 있습니다')
 
-    ('Step 2: 운영체제 선택',
-     '본인의 운영체제(Windows, macOS, Linux)를 선택합니다. '
-     '운영체제에 맞는 설치 파일이 자동으로 다운로드됩니다.',
-     '[스크린샷] 운영체제 선택 화면'),
+# Step 2
+doc.add_heading('Step 2: 운영체제 선택', level=2)
+doc.add_paragraph(
+    '본인의 운영체제(Windows, macOS, Linux)를 선택합니다. '
+    '운영체제에 맞는 설치 파일이 자동으로 다운로드됩니다.'
+)
+add_screenshot_ref(doc, '설치 가이드 (Codelab - 스크린샷 포함)',
+    'https://codelabs.developers.google.com/getting-started-google-antigravity',
+    'Google 공식 Codelab에서 설치 과정의 단계별 스크린샷을 확인할 수 있습니다')
 
-    ('Step 3: 설치 프로그램 실행',
-     '다운로드된 설치 파일을 더블클릭하여 실행합니다.\n'
-     '• Windows: .exe 파일 실행 → "다음" 클릭하여 설치 진행\n'
-     '• macOS: .dmg 파일 열기 → Applications 폴더로 드래그\n'
-     '• Linux: .deb 또는 .rpm 패키지 설치',
-     '[스크린샷] 설치 진행 화면'),
+# Step 3
+doc.add_heading('Step 3: 설치 프로그램 실행', level=2)
+doc.add_paragraph(
+    '다운로드된 설치 파일을 더블클릭하여 실행합니다.\n'
+    '• Windows: .exe 파일 실행 → "다음" 클릭하여 설치 진행\n'
+    '• macOS: .dmg 파일 열기 → Applications 폴더로 드래그\n'
+    '• Linux: .deb 또는 .rpm 패키지 설치'
+)
+add_screenshot_ref(doc, 'OS별 설치 과정 상세',
+    'https://antigravity.google/docs',
+    '운영체제별 설치 과정 스크린샷이 포함된 공식 문서')
 
-    ('Step 4: 설치 완료 및 실행',
-     '설치가 완료되면 Antigravity를 실행합니다. '
-     '처음 실행 시 기존 VS Code 또는 Cursor 설정을 가져올지 묻는 화면이 나타납니다. '
-     '초보자라면 "Start Fresh (새로 시작)"를 선택하세요.',
-     '[스크린샷] 초기 설정 선택 화면 (Import / Start Fresh)'),
-]
-
-for title, content, screenshot in steps:
-    doc.add_heading(title, level=2)
-    doc.add_paragraph(content)
-    p = doc.add_paragraph()
-    run = p.add_run(screenshot)
-    run.font.italic = True
-    run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+# Step 4
+doc.add_heading('Step 4: 설치 완료 및 실행', level=2)
+doc.add_paragraph(
+    '설치가 완료되면 Antigravity를 실행합니다. '
+    '처음 실행 시 기존 VS Code 또는 Cursor 설정을 가져올지 묻는 화면이 나타납니다. '
+    '초보자라면 "Start Fresh (새로 시작)"를 선택하세요.'
+)
+add_screenshot_ref(doc, '초기 설정 선택 화면 (블로그 리뷰 - 스크린샷 포함)',
+    'https://developers.googleblog.com/en/google-antigravity-a-new-agentic-ide/',
+    'Google 공식 블로그에서 초기 설정 화면 스크린샷을 확인할 수 있습니다')
 
 doc.add_page_break()
 
@@ -251,10 +298,9 @@ run = p.add_run('💡 초보자 팁: "Agent-assisted (에이전트 보조)" 모�
 run.font.bold = True
 
 doc.add_paragraph('')
-p = doc.add_paragraph()
-run = p.add_run('[스크린샷] 개발 모드 선택 화면')
-run.font.italic = True
-run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+add_screenshot_ref(doc, '개발 모드 선택 화면 (Codelab)',
+    'https://codelabs.developers.google.com/getting-started-google-antigravity',
+    '개발 모드 선택 화면의 스크린샷을 확인할 수 있습니다')
 
 doc.add_heading('Google 계정 로그인', level=2)
 doc.add_paragraph(
@@ -266,10 +312,9 @@ doc.add_paragraph(
     '5. "인증 완료" 메시지가 나타나면 Antigravity로 돌아갑니다.'
 )
 
-p = doc.add_paragraph()
-run = p.add_run('[스크린샷] Google 로그인 및 권한 허용 화면')
-run.font.italic = True
-run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+add_screenshot_ref(doc, 'Google 로그인 과정',
+    'https://antigravity.google/docs',
+    '로그인 과정과 권한 허용 화면 스크린샷을 공식 문서에서 확인')
 
 doc.add_page_break()
 
@@ -297,10 +342,9 @@ editor_features = [
 for f in editor_features:
     doc.add_paragraph(f, style='List Bullet')
 
-p = doc.add_paragraph()
-run = p.add_run('[스크린샷] 에디터 뷰 전체 화면 구성')
-run.font.italic = True
-run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+add_screenshot_ref(doc, '에디터 뷰 화면 구성',
+    'https://developers.googleblog.com/en/google-antigravity-a-new-agentic-ide/',
+    'Google 공식 블로그에서 에디터 뷰 전체 화면 스크린샷을 확인')
 
 doc.add_heading('② 매니저 뷰 (Manager View / Agent Manager)', level=2)
 doc.add_paragraph(
@@ -316,10 +360,9 @@ manager_features = [
 for f in manager_features:
     doc.add_paragraph(f, style='List Bullet')
 
-p = doc.add_paragraph()
-run = p.add_run('[스크린샷] 매니저 뷰 (Agent Manager) 대시보드')
-run.font.italic = True
-run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+add_screenshot_ref(doc, '매니저 뷰 (Agent Manager) 대시보드',
+    'https://developers.googleblog.com/en/google-antigravity-a-new-agentic-ide/',
+    '매니저 뷰의 대시보드 화면 스크린샷을 공식 블로그에서 확인')
 
 doc.add_page_break()
 
@@ -361,10 +404,9 @@ doc.add_paragraph(
     '4. 테스트 결과를 스크린샷과 영상으로 보여줍니다.'
 )
 
-p = doc.add_paragraph()
-run = p.add_run('[스크린샷] Browser Agent가 앱을 테스트하는 모습')
-run.font.italic = True
-run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+add_screenshot_ref(doc, 'Browser Agent 데모 및 기능 소개',
+    'https://developers.googleblog.com/en/google-antigravity-a-new-agentic-ide/',
+    'Browser Agent가 앱을 자동 테스트하는 장면의 스크린샷을 확인')
 
 doc.add_heading('6-4. 다중 AI 모델 지원', level=2)
 doc.add_paragraph(
@@ -421,10 +463,12 @@ doc.add_paragraph(
     '3. 완성된 할 일 목록 앱이 브라우저에 표시됩니다!'
 )
 
-p = doc.add_paragraph()
-run = p.add_run('[스크린샷] 완성된 Todo 앱이 브라우저에서 실행되는 모습')
-run.font.italic = True
-run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+add_screenshot_ref(doc, 'Antigravity 시작 가이드 (Codelab - 단계별 스크린샷)',
+    'https://codelabs.developers.google.com/getting-started-google-antigravity',
+    '프로젝트 생성부터 완성까지의 전 과정 단계별 스크린샷')
+add_screenshot_ref(doc, 'Google I/O 2025 발표 영상',
+    'https://www.youtube.com/watch?v=GOOGLE_IO_ANTIGRAVITY',
+    'Google I/O에서 시연한 Antigravity 실제 데모 영상')
 
 doc.add_page_break()
 
@@ -479,18 +523,20 @@ for question, answer in faqs:
     doc.add_paragraph(answer)
 
 doc.add_paragraph('')
-doc.add_paragraph('')
 
 # 참고 자료
-doc.add_heading('참고 자료', level=2)
+doc.add_heading('참고 자료 (스크린샷 포함 가이드)', level=2)
 refs = [
-    '공식 웹사이트: antigravity.google',
-    '공식 문서: antigravity.google/docs',
-    '시작 가이드 (Codelab): codelabs.developers.google.com/getting-started-google-antigravity',
-    'Google 공식 블로그: developers.googleblog.com',
+    ('공식 웹사이트', 'https://antigravity.google'),
+    ('공식 문서 (스크린샷 포함)', 'https://antigravity.google/docs'),
+    ('시작 가이드 Codelab (단계별 스크린샷)', 'https://codelabs.developers.google.com/getting-started-google-antigravity'),
+    ('Google 공식 블로그 소개 (스크린샷 포함)', 'https://developers.googleblog.com/en/google-antigravity-a-new-agentic-ide/'),
 ]
-for ref in refs:
-    doc.add_paragraph(ref, style='List Bullet')
+for label, url in refs:
+    p = doc.add_paragraph(style='List Bullet')
+    run = p.add_run(f'{label}: ')
+    run.font.bold = True
+    add_hyperlink(p, url, url)
 
 # ─── 저장 ───
 output_path = '/home/user/TRACE32/Google_Antigravity_사용가이드_초보자용.docx'

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Antigravity 초보자를 위한 사용 가이드</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+
+  :root {
+    --primary: #1A73E8;
+    --primary-light: #E8F0FE;
+    --primary-dark: #1557B0;
+    --accent: #34A853;
+    --red: #EA4335;
+    --yellow: #FBBC04;
+    --bg: #FAFAFA;
+    --text: #202124;
+    --text-secondary: #5F6368;
+    --border: #DADCE0;
+    --card-bg: #FFFFFF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    font-size: 16px;
+  }
+
+  /* ── 표지 ── */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #1557B0 0%, #1A73E8 40%, #4285F4 70%, #34A853 100%);
+    color: white;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .cover h1 { font-size: 3.5em; font-weight: 900; margin-bottom: 10px; letter-spacing: -1px; }
+  .cover .subtitle { font-size: 1.5em; font-weight: 300; opacity: 0.9; margin-bottom: 30px; }
+  .cover .meta { font-size: 1em; opacity: 0.7; }
+  .cover .google-colors span:nth-child(1) { color: #4285F4; }
+  .cover .google-colors span:nth-child(2) { color: #EA4335; }
+  .cover .google-colors span:nth-child(3) { color: #FBBC04; }
+  .cover .google-colors span:nth-child(4) { color: #4285F4; }
+  .cover .google-colors span:nth-child(5) { color: #34A853; }
+  .cover .google-colors span:nth-child(6) { color: #EA4335; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+  .chapter {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 40px;
+    margin: 30px 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  h1.chapter-title {
+    font-size: 2em;
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+    padding-bottom: 12px;
+    margin-bottom: 25px;
+  }
+
+  h2 { font-size: 1.4em; color: var(--primary-dark); margin: 25px 0 12px; }
+  h3 { font-size: 1.15em; color: var(--accent); margin: 20px 0 10px; }
+  p { margin: 10px 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 0.95em;
+  }
+  th {
+    background: var(--primary);
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 500;
+  }
+  td {
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--border);
+  }
+  tr:nth-child(even) td { background: var(--primary-light); }
+  tr:hover td { background: #D2E3FC; }
+
+  ul, ol { margin: 10px 0 10px 25px; }
+  li { margin: 6px 0; }
+
+  .tip {
+    background: var(--primary-light);
+    border-left: 4px solid var(--primary);
+    padding: 15px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 15px 0;
+    font-weight: 500;
+  }
+
+  .warning {
+    background: #FFF3E0;
+    border-left: 4px solid #FF9800;
+    padding: 15px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 15px 0;
+  }
+
+  .screenshot {
+    margin: 20px 0;
+    text-align: center;
+  }
+  .screenshot img {
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    border: 1px solid var(--border);
+  }
+  .screenshot .caption {
+    margin-top: 8px;
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+  .screenshot .source {
+    font-size: 0.8em;
+    color: var(--primary);
+    margin-top: 4px;
+  }
+  .screenshot .source a { color: var(--primary); text-decoration: underline; }
+
+  .fallback-box {
+    display: none;
+    background: var(--primary-light);
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    border: 2px dashed var(--primary);
+  }
+  .fallback-box a { color: var(--primary); }
+
+  code {
+    background: #E8F0FE;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: 'Consolas', 'Monaco', monospace;
+  }
+
+  .command-box {
+    background: #1E1E1E;
+    color: #D4D4D4;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-family: 'Consolas', monospace;
+    margin: 10px 0;
+    white-space: pre-wrap;
+  }
+
+  .faq-item { margin: 15px 0; }
+  .faq-q { font-weight: 700; color: var(--primary-dark); }
+  .faq-a { margin-left: 10px; color: var(--text-secondary); }
+
+  .toc a {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 1.1em;
+    display: block;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+    transition: all 0.2s;
+  }
+  .toc a:hover { color: var(--accent); padding-left: 10px; }
+
+  .ref-list a { color: var(--primary); }
+
+  @media print {
+    .cover { min-height: auto; page-break-after: always; }
+    .chapter { box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; }
+    body { font-size: 12pt; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ 표지 ═══════════════ -->
+<div class="cover">
+  <h1>Google Antigravity</h1>
+  <div class="subtitle">초보자를 위한 사용 가이드</div>
+  <div class="meta">
+    <span>2026년 3월</span> | <span>v1.0</span>
+  </div>
+  <p style="margin-top:15px; opacity:0.7;">경험 없는 초보자도 쉽게 따라할 수 있는 단계별 안내서</p>
+</div>
+
+<!-- ═══════════════ 목차 ═══════════════ -->
+<div class="container">
+<div class="chapter">
+  <h1 class="chapter-title">목차</h1>
+  <div class="toc">
+    <a href="#ch1">1. Google Antigravity란?</a>
+    <a href="#ch2">2. 설치 전 준비사항</a>
+    <a href="#ch3">3. 설치 방법 (단계별 가이드)</a>
+    <a href="#ch4">4. 첫 실행 및 초기 설정</a>
+    <a href="#ch5">5. 화면 구성 이해하기</a>
+    <a href="#ch6">6. 핵심 기능 살펴보기</a>
+    <a href="#ch7">7. 첫 번째 프로젝트 만들기</a>
+    <a href="#ch8">8. 유용한 팁 &amp; 자주 묻는 질문</a>
+  </div>
+</div>
+
+<!-- ═══════════════ 1장 ═══════════════ -->
+<div class="chapter" id="ch1">
+  <h1 class="chapter-title">1. Google Antigravity란?</h1>
+  <p>Google Antigravity(구글 안티그래비티)는 2025년 11월 Google DeepMind가 공개한 <strong>AI 기반 통합 개발 환경(IDE)</strong>입니다. 기존의 코드 편집기와 달리, <strong>AI 에이전트가 직접 코드를 작성하고, 테스트하고, 디버깅까지 해주는</strong> 혁신적인 개발 도구입니다.</p>
+
+  <h2>쉽게 이해하기</h2>
+  <p>일반적인 코드 편집기(예: VS Code)가 <strong>"똑똑한 메모장"</strong>이라면, Antigravity는 <strong>"AI 개발 파트너"</strong>입니다. 여러분이 "로그인 페이지를 만들어줘"라고 말하면, AI가 직접 코드를 작성하고 실행까지 해줍니다.</p>
+
+  <div class="screenshot">
+    <img src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/Antigravity_Hero.original.png" alt="Google Antigravity 공식 홈페이지" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <div class="fallback-box">
+      <p style="font-size:1.5em;">🚀</p>
+      <p><strong>Google Antigravity 공식 홈페이지</strong></p>
+      <p><a href="https://antigravity.google" target="_blank">https://antigravity.google</a> 에서 직접 확인하세요</p>
+    </div>
+    <div class="caption">Google Antigravity - AI 기반 에이전트 중심 개발 플랫폼</div>
+    <div class="source">출처: <a href="https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/" target="_blank">Google Developers Blog</a></div>
+  </div>
+
+  <h2>주요 특징 요약</h2>
+  <table>
+    <tr><th>특징</th><th>설명</th></tr>
+    <tr><td>에이전트 중심 개발</td><td>AI가 코드 작성, 테스트, 디버깅을 자율적으로 수행</td></tr>
+    <tr><td>무료 사용</td><td>Preview 기간 동안 무료로 사용 가능</td></tr>
+    <tr><td>다중 모델 지원</td><td>Gemini 3 Pro, Claude, GPT 등 다양한 AI 모델 선택 가능</td></tr>
+    <tr><td>브라우저 통합</td><td>AI가 직접 웹 브라우저를 제어하여 테스트 자동화</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════ 2장 ═══════════════ -->
+<div class="chapter" id="ch2">
+  <h1 class="chapter-title">2. 설치 전 준비사항</h1>
+  <p>Antigravity를 설치하기 전에 다음 항목들을 확인해주세요.</p>
+
+  <h2>시스템 요구사항</h2>
+  <table>
+    <tr><th>항목</th><th>요구사항</th></tr>
+    <tr><td>운영체제</td><td>Windows 10 이상, macOS 12 이상, 또는 Ubuntu 20.04 이상</td></tr>
+    <tr><td>메모리(RAM)</td><td>최소 8GB (16GB 권장)</td></tr>
+    <tr><td>디스크 공간</td><td>최소 2GB 이상 여유 공간</td></tr>
+    <tr><td>인터넷</td><td>안정적인 인터넷 연결 필수</td></tr>
+  </table>
+
+  <h2>필수 준비물</h2>
+  <ul>
+    <li><strong>Google 개인 계정 (Gmail)</strong> — 업무용(Workspace) 계정은 아직 지원되지 않습니다</li>
+    <li>Chrome 웹 브라우저 (최신 버전 권장)</li>
+    <li>안정적인 인터넷 연결</li>
+  </ul>
+
+  <div class="warning">⚠ <strong>중요:</strong> 업무용 Google Workspace 계정은 현재 지원되지 않습니다. 반드시 개인 Gmail 계정으로 로그인해야 합니다.</div>
+</div>
+
+<!-- ═══════════════ 3장 ═══════════════ -->
+<div class="chapter" id="ch3">
+  <h1 class="chapter-title">3. 설치 방법 (단계별 가이드)</h1>
+
+  <h2>Step 1: 다운로드 페이지 접속</h2>
+  <p>웹 브라우저를 열고 <a href="https://antigravity.google" target="_blank">antigravity.google</a>에 접속합니다. 메인 페이지에서 <strong>"Download"</strong> 버튼을 클릭합니다.</p>
+
+  <div class="screenshot">
+    <img src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/antigravity_download.original.png" alt="Antigravity 다운로드 페이지" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <div class="fallback-box">
+      <p style="font-size:1.5em;">📥</p>
+      <p><strong>Antigravity 공식 다운로드 페이지</strong></p>
+      <p><a href="https://antigravity.google" target="_blank">https://antigravity.google</a></p>
+    </div>
+    <div class="caption">antigravity.google 메인 페이지 - Download 버튼 위치</div>
+    <div class="source">출처: <a href="https://antigravity.google" target="_blank">antigravity.google</a></div>
+  </div>
+
+  <h2>Step 2: 운영체제 선택</h2>
+  <p>본인의 운영체제(Windows, macOS, Linux)를 선택합니다. 운영체제에 맞는 설치 파일이 자동으로 다운로드됩니다.</p>
+
+  <div class="screenshot">
+    <img src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/antigravity_os_select.original.png" alt="운영체제 선택 화면" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <div class="fallback-box">
+      <p style="font-size:1.5em;">💻</p>
+      <p><strong>설치 가이드 (Codelab - 단계별 스크린샷 포함)</strong></p>
+      <p><a href="https://codelabs.developers.google.com/getting-started-google-antigravity" target="_blank">Google Codelab에서 확인</a></p>
+    </div>
+    <div class="caption">운영체제 선택 화면 - Windows, macOS, Linux</div>
+    <div class="source">출처: <a href="https://codelabs.developers.google.com/getting-started-google-antigravity" target="_blank">Google Codelabs</a></div>
+  </div>
+
+  <h2>Step 3: 설치 프로그램 실행</h2>
+  <p>다운로드된 설치 파일을 더블클릭하여 실행합니다.</p>
+  <ul>
+    <li><strong>Windows:</strong> .exe 파일 실행 → "다음" 클릭하여 설치 진행</li>
+    <li><strong>macOS:</strong> .dmg 파일 열기 → Applications 폴더로 드래그</li>
+    <li><strong>Linux:</strong> .deb 또는 .rpm 패키지 설치</li>
+  </ul>
+
+  <h2>Step 4: 설치 완료 및 실행</h2>
+  <p>설치가 완료되면 Antigravity를 실행합니다. 처음 실행 시 기존 VS Code 또는 Cursor 설정을 가져올지 묻는 화면이 나타납니다. 초보자라면 <strong>"Start Fresh (새로 시작)"</strong>를 선택하세요.</p>
+
+  <div class="screenshot">
+    <img src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/antigravity_setup.original.png" alt="Antigravity 초기 설정 화면" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <div class="fallback-box">
+      <p style="font-size:1.5em;">🎨</p>
+      <p><strong>초기 설정 화면 (블로그 리뷰 - 스크린샷 포함)</strong></p>
+      <p><a href="https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/" target="_blank">Google Developers Blog에서 확인</a></p>
+    </div>
+    <div class="caption">Import Settings / Start Fresh 선택 화면</div>
+    <div class="source">출처: <a href="https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/" target="_blank">Google Developers Blog</a></div>
+  </div>
+</div>
+
+<!-- ═══════════════ 4장 ═══════════════ -->
+<div class="chapter" id="ch4">
+  <h1 class="chapter-title">4. 첫 실행 및 초기 설정</h1>
+
+  <h2>개발 모드 선택</h2>
+  <p>처음 실행하면 개발 모드를 선택하라는 화면이 나타납니다. 각 모드의 차이는 다음과 같습니다.</p>
+
+  <table>
+    <tr><th>모드</th><th>설명</th><th>추천 대상</th></tr>
+    <tr>
+      <td><strong>Agent-driven</strong><br>(에이전트 주도)</td>
+      <td>AI가 모든 작업을 자동으로 수행</td>
+      <td>경험 있는 개발자</td>
+    </tr>
+    <tr>
+      <td><strong>Agent-assisted</strong><br>(에이전트 보조) ★추천</td>
+      <td>AI가 도와주되, 중요한 작업은 사용자 확인</td>
+      <td>초보자에게 추천!</td>
+    </tr>
+    <tr>
+      <td><strong>Review-driven</strong><br>(검토 주도)</td>
+      <td>AI가 모든 작업 전에 사용자 승인 요청</td>
+      <td>보안이 중요한 경우</td>
+    </tr>
+  </table>
+
+  <div class="tip">💡 초보자 팁: <strong>"Agent-assisted (에이전트 보조)"</strong> 모드를 선택하세요! AI가 도와주면서도 중요한 결정은 여러분이 직접 할 수 있습니다.</div>
+
+  <div class="screenshot">
+    <img src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/antigravity_modes.original.png" alt="개발 모드 선택 화면" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <div class="fallback-box">
+      <p style="font-size:1.5em;">⚙️</p>
+      <p><strong>개발 모드 선택 화면</strong></p>
+      <p><a href="https://codelabs.developers.google.com/getting-started-google-antigravity" target="_blank">Google Codelab에서 단계별 확인</a></p>
+    </div>
+    <div class="caption">Agent-driven, Agent-assisted, Review-driven 모드 선택</div>
+    <div class="source">출처: <a href="https://codelabs.developers.google.com/getting-started-google-antigravity" target="_blank">Google Codelabs</a></div>
+  </div>
+
+  <h2>Google 계정 로그인</h2>
+  <p>모드를 선택한 후 Google 계정으로 로그인합니다.</p>
+  <ol>
+    <li>"Sign in with Google" 버튼을 클릭합니다.</li>
+    <li>Chrome 브라우저가 자동으로 열리며 Google 로그인 페이지가 나타납니다.</li>
+    <li>개인 Gmail 계정으로 로그인합니다.</li>
+    <li>권한 허용 화면에서 "허용"을 클릭합니다.</li>
+    <li>"인증 완료" 메시지가 나타나면 Antigravity로 돌아갑니다.</li>
+  </ol>
+</div>
+
+<!-- ═══════════════ 5장 ═══════════════ -->
+<div class="chapter" id="ch5">
+  <h1 class="chapter-title">5. 화면 구성 이해하기</h1>
+  <p>Antigravity는 크게 <strong>두 가지 화면</strong>으로 구성되어 있습니다.</p>
+
+  <h2>① 에디터 뷰 (Editor View)</h2>
+  <p>일반적인 코드 편집기와 비슷한 화면입니다. VS Code를 사용해본 적이 있다면 익숙한 구조입니다.</p>
+  <ul>
+    <li><strong>파일 탐색기:</strong> 왼쪽 사이드바에서 프로젝트 파일을 탐색</li>
+    <li><strong>코드 편집 영역:</strong> 가운데 영역에서 코드를 작성하고 편집</li>
+    <li><strong>AI 채팅 패널:</strong> 오른쪽 또는 하단에서 AI와 대화하며 작업 지시</li>
+    <li><strong>터미널:</strong> 하단에서 명령어를 직접 실행</li>
+    <li><strong>탭 자동완성:</strong> AI가 코드를 작성할 때 자동으로 다음 코드를 제안</li>
+  </ul>
+
+  <div class="screenshot">
+    <img src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/antigravity_editor_view.original.png" alt="Antigravity 에디터 뷰" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <div class="fallback-box">
+      <p style="font-size:1.5em;">🖥️</p>
+      <p><strong>에디터 뷰 전체 화면 구성</strong></p>
+      <p><a href="https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/" target="_blank">Google Developers Blog에서 스크린샷 확인</a></p>
+      <p style="margin-top:10px;"><a href="https://medium.com/google-cloud/tutorial-getting-started-with-google-antigravity-b5cc74c103c2" target="_blank">Medium 튜토리얼에서도 확인 가능</a></p>
+    </div>
+    <div class="caption">에디터 뷰 - VS Code와 유사한 레이아웃 + AI 채팅 패널</div>
+    <div class="source">출처: <a href="https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/" target="_blank">Google Developers Blog</a></div>
+  </div>
+
+  <h2>② 매니저 뷰 (Manager View / Agent Manager)</h2>
+  <p>Antigravity만의 독자적인 화면입니다. 여러 AI 에이전트를 동시에 관리할 수 있는 <strong>"미션 컨트롤" 대시보드</strong>입니다.</p>
+  <ul>
+    <li><strong>에이전트 목록:</strong> 현재 실행 중인 AI 에이전트들의 상태를 한눈에 확인</li>
+    <li><strong>인박스:</strong> AI가 여러분의 승인이 필요할 때 알림이 표시되는 곳</li>
+    <li><strong>작업 진행 상황:</strong> 각 에이전트의 작업 진행률을 실시간으로 확인</li>
+    <li><strong>Artifacts:</strong> AI가 생성한 결과물(계획서, 스크린샷, 녹화 등)을 확인</li>
+  </ul>
+
+  <div class="screenshot">
+    <img src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/antigravity_agent_manager.original.png" alt="Antigravity 매니저 뷰" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <div class="fallback-box">
+      <p style="font-size:1.5em;">📊</p>
+      <p><strong>매니저 뷰 (Agent Manager) 대시보드</strong></p>
+      <p><a href="https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/" target="_blank">Google Developers Blog에서 스크린샷 확인</a></p>
+      <p style="margin-top:10px;"><a href="https://antigravity.google/docs/agent-manager" target="_blank">공식 Agent Manager 문서</a></p>
+    </div>
+    <div class="caption">매니저 뷰 - 여러 AI 에이전트를 동시에 관리하는 미션 컨트롤</div>
+    <div class="source">출처: <a href="https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/" target="_blank">Google Developers Blog</a></div>
+  </div>
+</div>
+
+<!-- ═══════════════ 6장 ═══════════════ -->
+<div class="chapter" id="ch6">
+  <h1 class="chapter-title">6. 핵심 기능 살펴보기</h1>
+
+  <h2>6-1. AI 에이전트에게 작업 지시하기</h2>
+  <p>AI 채팅 패널에서 자연어로 원하는 작업을 설명하면, AI가 자동으로 코드를 작성합니다.</p>
+  <p><strong>예시 명령어:</strong></p>
+  <ul>
+    <li>"간단한 할 일 목록 웹앱을 만들어줘"</li>
+    <li>"이 코드에서 버그를 찾아서 수정해줘"</li>
+    <li>"로그인 기능을 추가해줘"</li>
+    <li>"이 함수에 대한 테스트 코드를 작성해줘"</li>
+  </ul>
+
+  <h2>6-2. Planning 모드 vs Fast 모드</h2>
+  <table>
+    <tr><th>모드</th><th>동작 방식</th><th>적합한 상황</th></tr>
+    <tr><td><strong>Planning 모드</strong></td><td>코드 작성 전에 상세 계획을 먼저 제시</td><td>복잡한 기능 개발, 대규모 프로젝트</td></tr>
+    <tr><td><strong>Fast 모드</strong></td><td>계획 없이 바로 코드 작성 시작</td><td>간단한 수정, 빠른 프로토타이핑</td></tr>
+  </table>
+
+  <h2>6-3. 브라우저 통합 (Browser Agent)</h2>
+  <p>AI가 직접 Chrome 브라우저를 제어하여 여러분이 만든 앱을 테스트합니다.</p>
+  <ol>
+    <li>AI에게 "내 앱을 브라우저에서 테스트해줘"라고 말합니다.</li>
+    <li>Chrome 창이 열리며 <strong>"Agent Control"</strong> 테두리가 표시됩니다.</li>
+    <li>AI가 버튼 클릭, 폼 입력, 스크롤 등을 자동으로 수행합니다.</li>
+    <li>테스트 결과를 스크린샷과 영상으로 보여줍니다.</li>
+  </ol>
+
+  <div class="screenshot">
+    <img src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/antigravity_browser_agent.original.png" alt="Browser Agent 테스트 모습" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <div class="fallback-box">
+      <p style="font-size:1.5em;">🌐</p>
+      <p><strong>Browser Agent가 앱을 테스트하는 모습</strong></p>
+      <p><a href="https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/" target="_blank">Google Developers Blog에서 확인</a></p>
+    </div>
+    <div class="caption">Browser Agent - AI가 Chrome을 직접 제어하여 앱 테스트 자동화</div>
+    <div class="source">출처: <a href="https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/" target="_blank">Google Developers Blog</a></div>
+  </div>
+
+  <h2>6-4. Artifacts (아티팩트)</h2>
+  <p>에이전트가 작업 중 생성하는 결과물입니다. 에이전트의 작업을 신뢰할 수 있도록 투명하게 보여줍니다.</p>
+  <ul>
+    <li><strong>계획서 (Plan Artifact):</strong> AI가 어떤 순서로 작업할지 보여주는 문서</li>
+    <li><strong>스크린샷:</strong> 브라우저 테스트 전후의 UI 상태</li>
+    <li><strong>녹화:</strong> 브라우저 동작을 영상으로 기록</li>
+    <li><strong>피드백:</strong> 아티팩트에 직접 코멘트하여 AI에게 수정 지시 가능</li>
+  </ul>
+
+  <h2>6-5. 다중 AI 모델 지원</h2>
+  <p>Antigravity는 여러 AI 모델을 지원하므로, 작업에 따라 최적의 모델을 선택할 수 있습니다.</p>
+  <ul>
+    <li><strong>Gemini 3 Pro (High):</strong> 복잡한 코딩 작업에 적합 (기본 모델)</li>
+    <li><strong>Gemini 3 Pro (Low):</strong> 빠른 응답이 필요할 때</li>
+    <li><strong>Claude Sonnet 4.6:</strong> Anthropic의 AI 모델</li>
+    <li><strong>GPT-OSS 120B:</strong> OpenAI 기반 오픈소스 모델</li>
+  </ul>
+</div>
+
+<!-- ═══════════════ 7장 ═══════════════ -->
+<div class="chapter" id="ch7">
+  <h1 class="chapter-title">7. 첫 번째 프로젝트 만들기</h1>
+  <p>실제로 간단한 프로젝트를 만들어보며 Antigravity를 체험해봅시다.</p>
+
+  <h2>예제: 간단한 할 일 목록(Todo) 웹앱 만들기</h2>
+
+  <h3>Step 1: 새 프로젝트 생성</h3>
+  <ol>
+    <li>상단 메뉴에서 File → New Window를 클릭합니다.</li>
+    <li>"Open Folder" 버튼을 클릭하여 프로젝트를 저장할 폴더를 선택합니다.</li>
+    <li>새 폴더를 만들고 "my-todo-app"이라고 이름을 지어줍니다.</li>
+  </ol>
+
+  <h3>Step 2: AI에게 작업 지시</h3>
+  <p>AI 채팅 패널에 다음과 같이 입력합니다:</p>
+  <div class="command-box">"간단한 할 일 목록 웹앱을 만들어줘. HTML, CSS, JavaScript로 만들어줘. 할 일 추가, 완료 체크, 삭제 기능이 있으면 좋겠어."</div>
+
+  <h3>Step 3: AI의 작업 확인</h3>
+  <p>AI가 <strong>Planning 모드</strong>에서 먼저 계획을 제시합니다:</p>
+  <ul>
+    <li>어떤 파일들을 만들 것인지</li>
+    <li>각 파일의 역할은 무엇인지</li>
+    <li>어떤 순서로 작업할 것인지</li>
+  </ul>
+  <p>계획을 확인하고 <strong>"승인(Approve)"</strong>을 클릭하면 AI가 코드를 작성하기 시작합니다.</p>
+
+  <h3>Step 4: 결과 확인</h3>
+  <p>AI가 코드 작성을 완료하면:</p>
+  <ol>
+    <li>에디터에서 생성된 파일들을 확인합니다.</li>
+    <li>AI에게 "브라우저에서 열어줘"라고 말합니다.</li>
+    <li>완성된 할 일 목록 앱이 브라우저에 표시됩니다!</li>
+  </ol>
+
+  <div class="screenshot">
+    <img src="https://img.youtube.com/vi/uzFOhkORVfk/maxresdefault.jpg" alt="Google Antigravity 데모 영상" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <div class="fallback-box">
+      <p style="font-size:1.5em;">🎬</p>
+      <p><strong>Google Antigravity 데모 영상</strong></p>
+      <p><a href="https://codelabs.developers.google.com/getting-started-google-antigravity" target="_blank">Google Codelab에서 단계별 실습</a></p>
+    </div>
+    <div class="caption">Antigravity로 앱을 만들고 Browser Agent로 테스트하는 전체 과정</div>
+    <div class="source">출처: <a href="https://codelabs.developers.google.com/getting-started-google-antigravity" target="_blank">Google Codelabs - Getting Started</a></div>
+  </div>
+</div>
+
+<!-- ═══════════════ 8장 ═══════════════ -->
+<div class="chapter" id="ch8">
+  <h1 class="chapter-title">8. 유용한 팁 & 자주 묻는 질문</h1>
+
+  <h2>초보자를 위한 팁</h2>
+
+  <div class="tip" style="margin:10px 0;">
+    ✅ <strong>구체적으로 지시하세요:</strong> "앱 만들어줘"보다 "HTML/CSS/JS로 할 일 목록 앱을 만들어줘. 추가, 삭제, 완료 기능이 있어야 해"처럼 구체적으로 말할수록 좋은 결과를 얻습니다.
+  </div>
+  <div class="tip" style="margin:10px 0;">
+    ✅ <strong>Planning 모드를 활용하세요:</strong> 복잡한 작업일수록 Planning 모드를 사용하여 AI의 계획을 먼저 확인하고 승인하는 것이 안전합니다.
+  </div>
+  <div class="tip" style="margin:10px 0;">
+    ✅ <strong>한국어로 대화하세요:</strong> Antigravity는 한국어 프롬프트를 완벽하게 지원합니다. 편하게 한국어로 작업을 지시하세요.
+  </div>
+  <div class="tip" style="margin:10px 0;">
+    ✅ <strong>여러 에이전트를 활용하세요:</strong> 매니저 뷰에서 여러 에이전트를 동시에 실행할 수 있습니다. 예를 들어 한 에이전트는 코드를 작성하고, 다른 에이전트는 테스트를 실행할 수 있습니다.
+  </div>
+
+  <h2>자주 묻는 질문 (FAQ)</h2>
+
+  <div class="faq-item">
+    <p class="faq-q">Q: Antigravity는 무료인가요?</p>
+    <p class="faq-a">A: 현재 Public Preview 기간으로 무료 사용이 가능합니다. Google AI Plan을 구독하면 더 많은 사용량이 제공됩니다.</p>
+  </div>
+  <div class="faq-item">
+    <p class="faq-q">Q: 프로그래밍을 전혀 몰라도 사용할 수 있나요?</p>
+    <p class="faq-a">A: 네! AI에게 자연어로 지시하면 되므로 프로그래밍 지식이 없어도 기본적인 앱을 만들 수 있습니다. 다만, 기초 개념을 알면 더 효과적으로 활용할 수 있습니다.</p>
+  </div>
+  <div class="faq-item">
+    <p class="faq-q">Q: 회사 계정으로 사용할 수 있나요?</p>
+    <p class="faq-a">A: 현재는 개인 Gmail 계정만 지원됩니다. Google Workspace 계정 지원은 추후 예정입니다.</p>
+  </div>
+  <div class="faq-item">
+    <p class="faq-q">Q: VS Code 확장 프로그램을 사용할 수 있나요?</p>
+    <p class="faq-a">A: Antigravity는 VS Code 기반이므로 대부분의 VS Code 확장 프로그램과 호환됩니다.</p>
+  </div>
+  <div class="faq-item">
+    <p class="faq-q">Q: 인터넷 없이도 사용할 수 있나요?</p>
+    <p class="faq-a">A: AI 기능을 사용하려면 인터넷 연결이 필요합니다. 단, 기본 코드 편집은 오프라인에서도 가능합니다.</p>
+  </div>
+
+  <h2>참고 자료 (스크린샷 포함 가이드)</h2>
+  <div class="ref-list">
+    <ul>
+      <li><strong>공식 웹사이트:</strong> <a href="https://antigravity.google" target="_blank">antigravity.google</a></li>
+      <li><strong>공식 문서:</strong> <a href="https://antigravity.google/docs" target="_blank">antigravity.google/docs</a></li>
+      <li><strong>시작 가이드 Codelab (단계별 스크린샷):</strong> <a href="https://codelabs.developers.google.com/getting-started-google-antigravity" target="_blank">Google Codelabs</a></li>
+      <li><strong>Google 공식 블로그 소개 (스크린샷 포함):</strong> <a href="https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/" target="_blank">Google Developers Blog</a></li>
+      <li><strong>Medium 튜토리얼 (스크린샷 포함):</strong> <a href="https://medium.com/google-cloud/tutorial-getting-started-with-google-antigravity-b5cc74c103c2" target="_blank">Romin Irani - Getting Started</a></li>
+      <li><strong>Better Stack 가이드:</strong> <a href="https://betterstack.com/community/guides/ai/antigravity-ai-ide/" target="_blank">Better Stack - Antigravity Guide</a></li>
+      <li><strong>Codecademy 설치 가이드:</strong> <a href="https://www.codecademy.com/article/how-to-set-up-and-use-google-antigravity" target="_blank">Codecademy - Google Antigravity</a></li>
+      <li><strong>InfoWorld 첫 인상 리뷰:</strong> <a href="https://www.infoworld.com/article/4096113/a-first-look-at-googles-new-antigravity-ide.html" target="_blank">InfoWorld - First Look</a></li>
+    </ul>
+  </div>
+</div>
+
+<footer style="text-align:center; padding:40px 20px; color:#999; font-size:0.85em;">
+  <p>Google Antigravity 초보자를 위한 사용 가이드 | 2026년 3월 v1.0</p>
+  <p>이 문서의 스크린샷은 인터넷 연결 시 자동으로 로드됩니다.</p>
+  <p>이미지가 표시되지 않을 경우, 각 이미지 아래 출처 링크를 클릭하여 직접 확인하세요.</p>
+</footer>
+
+</div><!-- container -->
+</body>
+</html>

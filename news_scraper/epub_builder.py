@@ -116,6 +116,40 @@ h2 {
 }
 .source-link a { color: #0f3460; text-decoration: underline; }
 
+/* 중요도 배지 */
+.importance-badge {
+    display: inline-block;
+    padding: 0.15em 0.7em;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin-left: 0.3em;
+}
+.importance-high { background-color: #e74c3c; color: white; }
+.importance-medium { background-color: #f39c12; color: white; }
+.importance-low { background-color: #95a5a6; color: white; }
+
+/* 뉴스 날짜 */
+.news-date-badge {
+    display: inline-block;
+    background-color: #2c3e50;
+    color: white;
+    padding: 0.15em 0.6em;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-right: 0.5em;
+}
+
+/* 날짜 섹션 구분 */
+.date-section-header {
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    color: white;
+    padding: 0.6em 1em;
+    border-radius: 6px;
+    margin: 1.5em 0 0.5em 0;
+    font-size: 1.1em;
+}
+
 /* 기사 구분선 */
 .article-separator {
     border: none;
@@ -184,13 +218,14 @@ ARTICLE_HTML = """
 <h1>{title}</h1>
 <div class="article-meta">
     <span class="meta-row">
-        <strong>Source:</strong> {source}
+        <span class="news-date-badge">{news_date}</span>
+        {importance_badge}
         <span class="reading-time">{reading_min} min read</span>
         {quality_badge}
     </span>
     <span class="meta-row">
+        <strong>Source:</strong> {source} &nbsp;|&nbsp;
         <strong>Author:</strong> {author} &nbsp;|&nbsp;
-        <strong>Date:</strong> {published} &nbsp;|&nbsp;
         <strong>Lang:</strong> {language}
     </span>
     <span class="meta-row" style="font-size:0.9em; color:#888;">
@@ -219,6 +254,16 @@ def _estimate_reading_minutes(text: str, lang: str = "ko") -> int:
         words = len(text.split())
         wpm = 230  # 영어: 분당 ~230단어
         return max(1, math.ceil(words / wpm))
+
+
+def _importance_badge_html(importance: str) -> str:
+    """중요도에 따른 배지 HTML"""
+    imp = importance.upper() if importance else "LOW"
+    if imp == "HIGH":
+        return '<span class="importance-badge importance-high">HIGH</span>'
+    elif imp == "MEDIUM":
+        return '<span class="importance-badge importance-medium">MEDIUM</span>'
+    return '<span class="importance-badge importance-low">LOW</span>'
 
 
 def _quality_badge_html(score: float) -> str:
@@ -334,6 +379,9 @@ def build_epub(
         lang_label = "Korean" if article.language == "ko" else "English"
         reading_min = _estimate_reading_minutes(article.content, article.language)
 
+        news_date = getattr(article, "news_date", "") or article.published or "N/A"
+        importance = getattr(article, "importance", "") or ""
+
         article_html = ARTICLE_HTML.format(
             title=article.title,
             source=article.source,
@@ -345,6 +393,8 @@ def build_epub(
             url_short=_shorten_url(article.url),
             reading_min=reading_min,
             quality_badge=_quality_badge_html(article.quality_score),
+            importance_badge=_importance_badge_html(importance),
+            news_date=news_date,
             extraction_method=article.extraction_method or "unknown",
             word_count=article.word_count or len(article.content),
         )

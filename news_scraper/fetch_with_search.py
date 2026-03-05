@@ -36,6 +36,8 @@ def load_articles_from_json(json_path: str) -> list[Article]:
             quality_score=quality,
             word_count=len(content),
             extraction_method=item.get("extraction_method", "json"),
+            news_date=item.get("news_date", item.get("published", "")),
+            importance=item.get("importance", ""),
         ))
 
     logger.info(f"JSON에서 {len(articles)}개 기사 로드 완료")
@@ -58,6 +60,8 @@ def save_articles_to_json(articles: list[Article], json_path: str) -> str:
             "quality_score": a.quality_score,
             "word_count": a.word_count,
             "extraction_method": a.extraction_method,
+            "news_date": a.news_date,
+            "importance": a.importance,
         })
 
     os.makedirs(os.path.dirname(json_path) or ".", exist_ok=True)

@@ -64,6 +64,8 @@ class Article:
     quality_score: float = 0.0  # 품질 점수 (0~1)
     word_count: int = 0
     extraction_method: str = ""  # 어떤 엔진으로 추출했는지
+    news_date: str = ""         # 뉴스 날짜 (YYYY-MM-DD)
+    importance: str = ""        # 중요도: HIGH / MEDIUM / LOW
 
 
 # ============================================================

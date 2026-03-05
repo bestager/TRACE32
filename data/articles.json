@@ -1,0 +1,102 @@
+[
+  {
+    "title": "DeepSeek V4: 중국의 트릴리온 파라미터 멀티모달 AI 모델 출시 임박",
+    "url": "https://technode.com/2026/03/02/deepseek-plans-v4-multimodal-model-release-this-week-sources-say/",
+    "source": "TechNode / Financial Times",
+    "content": "중국 AI 스타트업 DeepSeek가 최신 AI 모델 V4의 출시를 준비하고 있다. 이번 릴리스는 중국의 연례 양회(Two Sessions) 기간에 맞춰 2026년 3월 첫째 주에 이루어질 예정이다.\n\nDeepSeek V4는 트릴리온 파라미터 규모의 MoE(Mixture-of-Experts) 모델로, 약 320억 개의 활성 파라미터를 갖추고 있다. V4는 텍스트, 이미지, 비디오, 오디오 데이터를 처음부터 함께 학습한 네이티브 멀티모달 모델이다.\n\n모델의 핵심 혁신 사항으로는 Multi-head Latent Attention(MLA)을 기반으로 한 Manifold-Constrained Hyper-Connections(트릴리온 파라미터 규모에서의 학습 안정성 확보), Engram Conditional Memory(백만 토큰 컨텍스트에서의 효율적 검색), 강화된 DeepSeek Sparse Attention 시스템과 새로운 Lightning Indexer가 있다.\n\n컨텍스트 윈도우는 V3 대비 대폭 확장된 100만 토큰을 지원할 예정이다.\n\nV4 Lite라는 사전 출시 버전이 'Sealion Lite'라는 코드명으로 비공개 내부 테스트를 시작했다. V4 Lite는 2000억 파라미터 규모이며, 정식 V4는 1조 파라미터를 초과할 것으로 예상된다.\n\nFinancial Times, Reuters, The Information에 따르면 V4는 코딩과 장문 컨텍스트 소프트웨어 엔지니어링 작업에 최적화되어 있으며, 내부 테스트에서 Claude와 ChatGPT를 능가할 수 있다는 결과가 나왔다. 유출된 벤치마크 수치로는 HumanEval 약 90%, SWE-bench Verified 80% 이상이 보고되었다.\n\nDeepSeek는 중국 AI 칩 메이커 화웨이와 캠브리콘과 협력하여 V4를 이들의 최신 칩에 최적화했다. 이는 미국산 반도체 의존도를 줄이려는 전략적 움직임이다.\n\nDeepSeek는 V4를 오픈소스 라이선스로 출시할 예정이며, 글로벌 개발자들이 라이선스 비용 없이 모델을 파인튜닝하고 배포할 수 있게 된다.",
+    "html_content": "<p>중국 AI 스타트업 DeepSeek가 최신 AI 모델 V4의 출시를 준비하고 있다. 이번 릴리스는 중국의 연례 양회(Two Sessions) 기간에 맞춰 2026년 3월 첫째 주에 이루어질 예정이다.</p><p>DeepSeek V4는 트릴리온 파라미터 규모의 MoE(Mixture-of-Experts) 모델로, 약 320억 개의 활성 파라미터를 갖추고 있다. V4는 텍스트, 이미지, 비디오, 오디오 데이터를 처음부터 함께 학습한 네이티브 멀티모달 모델이다.</p><p>모델의 핵심 혁신 사항으로는 Multi-head Latent Attention(MLA)을 기반으로 한 Manifold-Constrained Hyper-Connections(트릴리온 파라미터 규모에서의 학습 안정성 확보), Engram Conditional Memory(백만 토큰 컨텍스트에서의 효율적 검색), 강화된 DeepSeek Sparse Attention 시스템과 새로운 Lightning Indexer가 있다.</p><p>컨텍스트 윈도우는 V3 대비 대폭 확장된 100만 토큰을 지원할 예정이다.</p><p>V4 Lite라는 사전 출시 버전이 'Sealion Lite'라는 코드명으로 비공개 내부 테스트를 시작했다. V4 Lite는 2000억 파라미터 규모이며, 정식 V4는 1조 파라미터를 초과할 것으로 예상된다.</p><p>Financial Times, Reuters, The Information에 따르면 V4는 코딩과 장문 컨텍스트 소프트웨어 엔지니어링 작업에 최적화되어 있으며, 내부 테스트에서 Claude와 ChatGPT를 능가할 수 있다는 결과가 나왔다. 유출된 벤치마크 수치로는 HumanEval 약 90%, SWE-bench Verified 80% 이상이 보고되었다.</p><p>DeepSeek는 중국 AI 칩 메이커 화웨이와 캠브리콘과 협력하여 V4를 이들의 최신 칩에 최적화했다. 이는 미국산 반도체 의존도를 줄이려는 전략적 움직임이다.</p><p>DeepSeek는 V4를 오픈소스 라이선스로 출시할 예정이며, 글로벌 개발자들이 라이선스 비용 없이 모델을 파인튜닝하고 배포할 수 있게 된다.</p>",
+    "author": "TechNode / Financial Times",
+    "published": "2026-03-02",
+    "language": "ko"
+  },
+  {
+    "title": "Nvidia GTC 2026: AI 추론 전용 칩 공개 예정 — Groq 기술 통합, OpenAI가 첫 고객",
+    "url": "https://siliconangle.com/2026/03/01/report-nvidia-working-top-secret-ai-inference-chip-debut-next-month/",
+    "source": "SiliconANGLE / Tom's Guide",
+    "content": "Nvidia의 연례 GTC(Global Technology Conference)가 2026년 3월 16~19일 산호세에서 개최된다. CEO 젠슨 황은 '세계가 한 번도 본 적 없는 여러 신규 칩'을 공개할 것이라고 예고했다.\n\nNvidia는 GPU가 아닌 새로운 추론 전용 칩을 준비하고 있다. 이 칩은 Groq의 LPU(Language Processing Unit) 기술을 통합한 프로세서로, Groq가 시장에서 가장 빠른 추론 엔진으로 만든 결정론적, SRAM 기반 아키텍처를 활용한다.\n\n이 칩은 TSMC의 A16 공정 노드와 3D 스태킹 기술을 사용하며, AMD의 X3D 접근법과 유사하게 SRAM 다이를 컴퓨트 다이 위에 적층한다.\n\n2025년 12월 Nvidia는 Groq와 200억 달러 규모의 라이선스 계약을 체결했다. 이는 Nvidia 역대 최대 규모의 계약이다. Groq 창립자 Jonathan Ross와 사장 Sunny Madra, 그리고 대부분의 엔지니어링 팀이 Nvidia로 합류했다.\n\nOpenAI가 첫 번째이자 최대 고객으로, 새 칩으로 구동되는 3GW 규모의 전용 추론 용량을 확약했다. 3GW는 대형 원자력발전소 3기의 출력에 해당하는 규모다.\n\nOpenAI는 현재 Nvidia 하드웨어가 소프트웨어 개발 및 AI-소프트웨어 통신 등 특정 ChatGPT 작업을 처리하는 속도에 불만을 표명해왔다.\n\nNvidia의 GPU는 AI 학습에서는 독보적이지만, 추론에서는 더 이상 가장 효율적인 선택이 아니라는 평가가 나온다. Amazon의 Inferentia 2 칩은 Nvidia GPU 대비 30~40% 더 에너지 효율적이라고 주장하며, Google의 Ironwood TPU도 와트당 성능이 더 높다고 밝혔다.\n\n이 외에도 차세대 AI 및 고성능 컴퓨팅을 위한 Feynman 칩, Rubin AI 칩 라인 업데이트, PC 시장을 위한 새로운 CPU 칩 등이 공개될 것으로 예상된다. Rubin GPU는 전작 Blackwell 대비 최대 5배 성능 향상을 목표로 한다.",
+    "html_content": "",
+    "author": "SiliconANGLE",
+    "published": "2026-03-01",
+    "language": "ko"
+  },
+  {
+    "title": "Apple, M5 Pro·M5 Max 탑재 신형 MacBook Pro 발표 — Fusion 아키텍처 최초 도입",
+    "url": "https://www.apple.com/newsroom/2026/03/apple-introduces-macbook-pro-with-all-new-m5-pro-and-m5-max/",
+    "source": "Apple Newsroom",
+    "content": "Apple이 2026년 3월 3일 M5 Pro 및 M5 Max 칩을 탑재한 새로운 14인치, 16인치 MacBook Pro를 발표했다. 두 칩 모두 Apple 실리콘 최초의 'Fusion 아키텍처'를 채택해, 두 개의 3세대 3nm 다이를 첨단 패키징으로 하나의 칩에 결합했다.\n\nCPU는 18코어로, 6개의 '슈퍼 코어'(Apple의 새로운 최고 성능 코어 브랜딩)와 12개의 효율 중심 퍼포먼스 코어로 구성된다. M4 세대 대비 멀티스레드 성능이 최대 30% 향상되었으며, M1 Pro/M1 Max 대비 최대 2.5배 빠르다.\n\nGPU에는 각 코어마다 Neural Accelerator가 통합되어 이전 세대 대비 최대 4배, M1 모델 대비 최대 8배의 AI 성능을 제공한다. 그래픽 성능도 M4 Pro/M4 Max 대비 최대 50% 향상되었다.\n\nM5 Max는 최대 128GB 통합 메모리를 지원하며 614GB/s의 대역폭을 제공한다. SSD 성능은 최대 2배 빨라졌으며, M5 Pro는 1TB, M5 Max는 2TB 스토리지부터 시작한다.\n\n연결성으로는 Thunderbolt 5 포트 3개, 8K 해상도 지원 HDMI, SDXC 카드 슬롯, MagSafe 3 고속충전을 갖추었다. Apple 자체 설계 무선 네트워킹 칩 N1이 Wi-Fi 7과 Bluetooth 6을 지원한다.\n\n배터리 수명은 14인치 M5 Max 모델이 최대 20시간(M4 Max 18시간에서 향상), 16인치 모델은 22시간을 제공한다.\n\n가격은 14인치 M5 Pro 모델 $2,199부터, M5 Max $3,599부터 시작한다. 16인치 M5 Pro는 $2,699, M5 Max는 $3,899부터다. 사전 주문은 3월 4일, 출시일은 3월 11일이다.\n\nmacOS Tahoe가 무료 업데이트로 제공되며, Apple Intelligence는 영어, 프랑스어, 독일어, 일본어, 한국어, 중국어 등 다국어를 지원하는 베타 버전으로 이용 가능하다.",
+    "html_content": "",
+    "author": "Apple",
+    "published": "2026-03-03",
+    "language": "ko"
+  },
+  {
+    "title": "화웨이, MWC 2026에서 Atlas 950 AI 슈퍼포드 공개 — 엔비디아에 도전장",
+    "url": "https://www.huawei.com/en/news/2026/3/mwc-superpod-ai",
+    "source": "Huawei / 글로벌이코노믹",
+    "content": "화웨이가 스페인 바르셀로나에서 열린 MWC 2026에서 AI 기술의 집약체인 '아틀라스 950 슈퍼포드(Atlas 950 SuperPoD)'를 해외 시장에 처음 공개했다. 미국의 강력한 블랙리스트 제재 속에서도 엔비디아에 직접적인 도전장을 내밀었다.\n\n아틀라스 950 슈퍼포드의 핵심 사양은 다음과 같다. 자체 개발 AI 가속기 '어센드(Ascend) 950 DT' 칩 8,192개를 하나로 연결한 거대 컴퓨팅 클러스터로, 약 1,000㎡ 규모에 160개 캐비닛으로 구성된다. FP8 기준 8엑사플롭스, FP4 기준 16엑사플롭스의 연산 성능을 제공하며, 초당 16.3PB(페타바이트)의 대역폭을 구현한다.\n\n화웨이는 엔비디아의 NVLink에 대응하기 위해 자체 인터커넥트 프로토콜 '유니파이드버스(UnifiedBus)'를 개발했다. 수천 개의 컴퓨팅 노드가 하나의 단일 컴퓨터처럼 작동할 수 있게 하는 기술이다.\n\n화웨이는 엔비디아의 차세대 베라 루빈(NVL576) 대비 연산 성능이 약 6.7배 앞선다고 주장했다. 다만 제3기관의 독립 검증은 아직 이루어지지 않았다. 참고로 엔비디아의 베라 루빈 NVL72는 72개 GPU와 36개 CPU로 구성돼 랙당 FP4 기준 3.6엑사플롭스 성능을 지원한다.\n\n어센드 950 칩은 중국 최대 파운드리 SMIC의 최신 'N+3' 공정으로 제작될 예정이다. 서방의 첨단 노광 장비 수입이 차단된 상황에서도 5~7나노미터급 양산 능력을 확보했음을 시사한다.\n\n다만 한계도 있다. 이전 세대 '어센드 910C'는 엔비디아 Blackwell B200의 3분의 1 수준에 머물렀고, 직전 모델 '클라우드매트릭스 384'는 엔비디아 시스템 대비 전력 소모가 3.9배였다. 서구 시장 진출도 제약이 있다.\n\nCAN(Compute Architecture for Neural Networks) 아키텍처도 공개하며 엔비디아의 CUDA에 대응하는 대안을 제시했다. 출시는 2026년 4분기부터 예상된다.",
+    "html_content": "",
+    "author": "글로벌이코노믹 / Huawei",
+    "published": "2026-03-03",
+    "language": "ko"
+  },
+  {
+    "title": "오픈AI, 미 국방부 기밀 네트워크에 AI 모델 배치 합의 — 앤트로픽 퇴출 직후",
+    "url": "https://www.hankyung.com/amp/2026022813277",
+    "source": "한국경제 / CNBC / BBC",
+    "content": "오픈AI가 미국 국방부와 자사 인공지능(AI) 모델을 군 기밀 네트워크에 배치하는 데 합의했다고 CNBC가 2026년 2월 28일 보도했다. 샘 올트먼 오픈AI CEO는 2월 27일 엑스(X)를 통해 국방부와 협의하여 자사 모델을 기밀 네트워크에 배치하기로 합의했다고 밝혔다.\n\n이번 합의는 도널드 트럼프 미국 대통령이 전날 연방기관에 앤트로픽 기술 사용을 중단하라고 지시한 직후 이뤄진 결정이다. 국방부는 앤트로픽에 AI를 '합법적인 모든 용도'에 제한 없이 사용할 수 있도록 요구했으나, 앤트로픽은 대규모 국내 감시와 인간 개입 없는 자율살상무기에는 자사 모델을 사용할 수 없다는 윤리적 안전장치를 고수하며 이를 거부했다.\n\n오픈AI는 세 가지 핵심 원칙을 제시했다. 첫째, 대규모 국내 감시에 사용 금지. 둘째, 자율 무기 시스템 제어에 사용 금지. 셋째, 사회 신용 시스템과 같은 고도 자동화된 의사결정에 사용 금지다.\n\n올트먼 CEO는 '국내 대량 감시 금지와 자율 무기 시스템을 포함한 무력 사용에 대한 인간의 책임'이 가장 중요한 안전 원칙이라고 강조했다. 모델 운영 및 안전성 확보를 위해 전방 배치 엔지니어(FDE)를 배치하며, 클라우드 네트워크에만 배포할 것이라고 밝혔다.\n\n3월 3일 BBC 보도에 따르면 오픈AI는 계약을 수정하여 'AI 시스템은 미국 시민 또는 미국 국적 보유자에 대한 국내 감시에 고의적으로 사용돼서는 안된다'는 문구를 추가했다. 또한 국방부는 오픈AI 서비스가 NSA 등 정보기관에서 사용되지 않을 것을 확인했다.\n\n시장조사업체 센서타워에 따르면 오픈AI 발표 이후 챗GPT 일일 평균 삭제율은 평소 대비 200% 증가했다.\n\n실리콘밸리 여론은 엇갈린다. 트럼프 행정부와 공화당은 오픈AI의 협조를 환영하고 앤트로픽을 비난했지만, 민주당 하킴 제프리스 의원 등은 '미국 시민에 대한 대규모 감시의 서막'이라며 강력히 반발하고 있다. 오픈AI는 NATO 기밀 네트워크에 자사 기술을 배치하는 방안도 검토 중인 것으로 전해졌다.",
+    "html_content": "",
+    "author": "한국경제 / CNBC",
+    "published": "2026-02-28",
+    "language": "ko"
+  },
+  {
+    "title": "KAIST, '뇌를 닮은 AI' 개발 — 예측 부호화 딥러닝으로 역전파 넘어서다",
+    "url": "https://www.etnews.com/20260227000177",
+    "source": "전자신문 / 헤럴드경제",
+    "content": "KAIST 뇌인지과학과 이상완 교수 연구팀이 인간 뇌의 학습 원리를 딥러닝에 적용해, 깊은 인공지능 모델도 안정적으로 학습시키는 새로운 기술을 개발했다고 2026년 3월 1일 밝혔다.\n\n핵심 원리는 '예측 부호화(Predictive Coding)'다. 우리 뇌는 세상을 수동적으로 받아들이지 않고, '다음에 무슨 일이 일어날까?'를 먼저 예측한 뒤, 실제 결과가 다르면 그 차이(오차)를 줄이는 방향으로 스스로를 수정한다.\n\n과학자들은 이 원리를 AI에 적용하려 했지만, 신경망이 깊어질수록 오차가 특정 부위에 몰리거나 아예 사라져 성능이 떨어지는 문제가 반복되었다.\n\n연구팀은 그 원인을 수학적으로 규명하고 새로운 해법을 제시했다. AI가 결과만 예측하는 것이 아니라, '예측 오차가 앞으로 어떻게 변할지'까지 다시 예측하도록 만든 것으로, 이를 '메타 예측(Meta Prediction)'이라 부른다. 쉽게 말해 '틀림을 한 번 더 생각하는 AI'다.\n\n총 30가지 실험 중 29개에서, 현재 AI의 표준 학습법인 '역전파(Backpropagation)'보다 높은 정확도를 기록했다. 뇌처럼 분산적·부분적으로 학습해도 큰 AI 모델을 잘 학습시킬 수 있음을 입증했다.\n\n이번 기술은 전력 효율이 중요한 뉴로모픽 컴퓨팅, 환경에 적응해야 하는 로봇 AI, 기기 내부에서 작동하는 엣지 AI 등으로 확장될 것으로 기대된다.\n\n이상완 석좌교수는 '뇌의 구조를 단순히 모방한 것이 아니라, 뇌의 학습 원리 자체를 AI가 따르도록 만든 것이 이번 연구의 핵심'이라고 밝혔다. 연구는 인공지능 국제학회 ICLR 2026에 채택되어 1월 26일 온라인 게재되었으며, 논문명은 'Stable and Scalable Deep Predictive Coding Networks with Meta Prediction Errors'이다.",
+    "html_content": "",
+    "author": "전자신문",
+    "published": "2026-03-01",
+    "language": "ko"
+  },
+  {
+    "title": "Anthropic Launches Enterprise Agents Program with Claude Cowork — MCP Donated to Linux Foundation",
+    "url": "https://techcrunch.com/2026/02/24/anthropic-launches-new-push-for-enterprise-agents-with-plugins-for-finance-engineering-and-design/",
+    "source": "TechCrunch / Anthropic",
+    "content": "Anthropic unveiled its new enterprise agents program on February 24, 2026, its most aggressive push yet to integrate agentic AI into everyday workplaces. The launch of Claude Cowork was the culmination of a high-velocity month for Anthropic.\n\nAnthropic's head of Americas, Kate Jensen, noted that '2025 was meant to be the year agents transformed the enterprise, but the hype turned out to be mostly premature.'\n\nThe systems launched are largely focused on making tools easier to deploy within a company, including private software marketplaces, controlled data flows, and customized plug-ins. The initiative moves beyond general-purpose chatbots, introducing industry-specific 'Claude Cowork' plug-ins tailored for finance, human resources, legal, and engineering sectors.\n\nEnterprises can build a private marketplace for specialized AI agents in Claude Cowork and distribute them across their organizations. Admins can set up plugins from starter templates or create them from scratch with a new menu called Customize.\n\nAnthropic donated the Model Context Protocol (MCP) to the Agentic AI Foundation (AAIF), a directed fund under the Linux Foundation, co-founded by Anthropic, Block and OpenAI, with support from Google, Microsoft, AWS, Cloudflare, and Bloomberg.\n\nMCP has achieved incredible adoption: there are now more than 10,000 active public MCP servers, covering everything from developer tools to Fortune 500 deployments. MCP has been adopted by ChatGPT, Cursor, Gemini, Microsoft Copilot, Visual Studio Code, and other popular AI products.\n\nThe newly released connectors include deep integrations for Gmail, Google Calendar, Google Drive, DocuSign, LegalZoom, Harvey, Clay, Apollo, FactSet, MSCI, Similarweb, WordPress, and various CRM platforms.\n\nPwC will work with Anthropic to help clients embed Claude into complex enterprise environments where regulatory compliance, auditability, and risk controls are essential.\n\nAnthropic has formally opened its Bengaluru office, sharpening its enterprise AI push in India as the country emerges as Claude's second-largest market globally. Cognizant is deploying Claude to 350,000 employees globally.\n\nThe initial Cowork plugins release triggered a plunge in stock prices of legal industry software providers. The 'SaaSpocalypse' may not be the death of software, but it is certainly the end of software as we knew it in the 2010s.",
+    "html_content": "",
+    "author": "TechCrunch",
+    "published": "2026-02-24",
+    "language": "en"
+  },
+  {
+    "title": "AI World Models Race 2026: LeCun Leaves Meta, World Labs Raises $1B, DeepMind Ships Genie 3",
+    "url": "https://introl.com/blog/world-models-race-agi-2026",
+    "source": "Introl / TechCrunch",
+    "content": "The world models paradigm exploded into mainstream AI development in late 2025 and early 2026. While Large Language Models predict the next word, world models predict the next frame in space and time, building internal representations of how the physical and digital world works.\n\nYann LeCun left Meta after 12 years to launch AMI Labs, raising 500 million euros at a 3 billion euro valuation to build AI systems that understand physics rather than just predicting text. On its newly launched website, the startup disclosed its plans to develop 'world models' in order to 'build intelligent systems that understand the real world.'\n\nLeCun is AMI's executive chairman, not its CEO. That role belongs to Alex LeBrun, previously co-founder and CEO at Nabla, a health AI startup. LeCun told MIT Technology Review that his former employer could well be AMI's first client.\n\nFei-Fei Li's World Labs launched its first commercial world model product called Marble. It is now available via freemium and paid tiers that let users turn text prompts, photos, videos, 3D layouts, or panoramas into editable, downloadable 3D environments. The company launched in 2024 with $230 million in funding and shipped Marble in November 2025. Pricing ranges from free to $95/month for professional use.\n\nWorld Labs has now secured a $200 million investment from Autodesk as part of a larger $1 billion round from AMD, Emerson Collective, Fidelity, Nvidia, and others. The company targets early use cases in gaming, visual effects, virtual reality and robotics.\n\nGoogle DeepMind released Genie 3, the first real-time interactive world model capable of generating persistent 3D environments at 24 fps. NVIDIA's Cosmos platform — trained on 20 million hours of real-world data — surpassed 2 million downloads.\n\nOver $1.3 billion in funding is flowing into world model startups in early 2026. With industry giants investing billions and pioneers like Yann LeCun betting their careers on this technology, 2026 is the year world models move from research labs to real-world applications.\n\nLeCun's domain focuses on AI systems that build internal representations of physical reality, enabling them to understand cause and effect, predict future states, and plan action sequences. The target application is embodied AI: robots, autonomous vehicles, and other systems that need to act safely in the real world.",
+    "html_content": "",
+    "author": "Introl",
+    "published": "2026-03-01",
+    "language": "en"
+  },
+  {
+    "title": "AI-Native Networks Are No Longer a 6G Promise — MWC 2026 Just Proved It",
+    "url": "https://www.artificialintelligence-news.com/news/ai-native-networks-mwc-2026/",
+    "source": "AI News",
+    "content": "Nvidia secured commitments from over a dozen global operators and tech companies — including BT Group, Deutsche Telekom, Ericsson, Nokia, SK Telecom, and others — to build 6G on open, secure, and AI-native software-defined platforms at MWC 2026.\n\nEricsson arrived at MWC 2026 with a different approach, unveiling ten new AI-ready radios built on its own purpose-built silicon with neural network accelerators embedded directly into its Massive MIMO hardware.\n\nThe GSMA announced the Open Telco AI initiative, arguing that current frontier models like GPT-5, Gemini, and Claude are inadequate for telecom-specific tasks. Only 16% of telecom generative AI deployments target networks and operations, despite it being the industry's largest cost center.\n\nThe telecom industry is building its own AI rather than relying entirely on general-purpose large language models. The initiative brings together operators and vendors to develop domain-specific AI models that understand the unique requirements of network management, optimization, and customer service.\n\nNokia demonstrated its AI-powered network optimization platform, showing real-time energy savings of up to 40% through intelligent radio resource management. SK Telecom showcased its AI-native network architecture that enables sub-millisecond response times for edge computing applications.\n\nDeutsche Telekom presented its autonomous network operations center, where AI agents handle 80% of routine network incidents without human intervention, reducing mean time to repair by 65%.\n\nThe convergence of AI and telecommunications at MWC 2026 signals a fundamental shift from using AI as an add-on tool to embedding it as the core operating principle of next-generation networks. This approach promises to deliver the ultra-reliable, low-latency connectivity required for applications like autonomous vehicles, remote surgery, and industrial automation.",
+    "html_content": "",
+    "author": "AI News",
+    "published": "2026-03-04",
+    "language": "en"
+  },
+  {
+    "title": "Over 80% of Companies Report No AI Productivity Gains Despite Billions in Investment",
+    "url": "https://www.tomshardware.com/future-of-ai",
+    "source": "Tom's Hardware",
+    "content": "Over 80% of companies report no productivity gains from AI so far despite billions in investment, according to a comprehensive survey published on March 2, 2026. The findings highlight the growing gap between AI hype and real-world deployment outcomes.\n\nIndustry pioneer Andrew Ng stated that the industry is decades away from developing artificial general intelligence (AGI). He defines AGI as AI that can perform the same intellectual feats that humans can, and stated that 'we are closer than before, yet many decades away from an AI that matches human intelligence.'\n\nIf 2025 was the year AI got a vibe check, 2026 will be the year the tech gets practical. The focus is shifting away from building ever-larger language models and toward making AI usable — deploying smaller models, embedding intelligence into physical devices, and designing systems that integrate into human workflows.\n\nThe survey identified several key barriers to AI productivity gains: integration challenges with existing systems (cited by 67% of respondents), lack of quality training data (54%), difficulty measuring ROI (48%), and organizational resistance to change (41%).\n\nDespite these challenges, the AI industry continues to attract massive investment. Global AI spending is projected to exceed $500 billion in 2026, with enterprise AI deployment expected to grow 40% year-over-year.\n\nExperts suggest the productivity gap will narrow as companies move from experimental AI pilots to production-scale deployments. The key is focusing on specific, well-defined use cases rather than attempting broad AI transformation all at once.\n\nMany researchers believe the next big leap will come from world models — AI systems that learn how things move and interact in 3D spaces. Signs that 2026 will be a big year for world models are multiplying.\n\nThe report concludes that while AI has not yet delivered on its productivity promises for most companies, the technology is at an inflection point. Companies that invest in proper data infrastructure, clear use cases, and employee training are beginning to see measurable returns.",
+    "html_content": "",
+    "author": "Tom's Hardware",
+    "published": "2026-03-02",
+    "language": "en"
+  }
+]

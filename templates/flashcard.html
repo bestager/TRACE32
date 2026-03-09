@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}플래시카드 - {{ category.name_ko }}{% endblock %}
+
+{% block content %}
+<div class="flashcard-container">
+    <div class="flashcard-header">
+        <h2>🃏 {{ category.name_ko }} 플래시카드</h2>
+        <div class="flashcard-progress">
+            <span id="currentNum">1</span> / <span id="totalNum">{{ sentences|length }}</span>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flashcard-area" id="flashcardArea">
+        <div class="flashcard" id="flashcard" onclick="flipCard()">
+            <div class="flashcard-front">
+                <p class="flashcard-text" id="frontText"></p>
+                <small class="flashcard-hint">클릭하여 번역 보기 (Space)</small>
+            </div>
+            <div class="flashcard-back">
+                <p class="flashcard-text" id="backText"></p>
+                <small class="flashcard-hint">클릭하여 원문 보기 (Space)</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="flashcard-controls">
+        <button class="btn btn-lg" onclick="prevCard()" title="이전 (←)">◀ 이전</button>
+        <button class="btn btn-lg btn-danger" onclick="markCard(false)" title="모름 (2)">✗ 모름</button>
+        <button class="btn btn-lg btn-success" onclick="markCard(true)" title="알고있음 (1)">✓ 알고있음</button>
+        <button class="btn btn-lg" onclick="nextCard()" title="다음 (→)">다음 ▶</button>
+    </div>
+
+    <div class="flashcard-stats" id="flashcardStats">
+        <span class="stat-correct">✓ <span id="correctCount">0</span></span>
+        <span class="stat-wrong">✗ <span id="wrongCount">0</span></span>
+    </div>
+
+    <div class="mode-toggle">
+        <label>
+            <input type="checkbox" id="showKoreanFirst" onchange="toggleMode()">
+            한국어 먼저 보기
+        </label>
+    </div>
+</div>
+
+<div class="flashcard-complete hidden" id="completeScreen">
+    <h2>학습 완료! 🎉</h2>
+    <div class="complete-stats">
+        <p>전체: <strong id="completeTotal"></strong>문장</p>
+        <p>알고있음: <strong id="completeCorrect" class="text-success"></strong>문장</p>
+        <p>모름: <strong id="completeWrong" class="text-danger"></strong>문장</p>
+        <p>정답률: <strong id="completeAccuracy"></strong>%</p>
+    </div>
+    <div class="complete-actions">
+        <button class="btn btn-primary" onclick="restartFlashcards()">다시 학습</button>
+        <a href="/quiz/{{ category.name_ko }}" class="btn btn-accent">퀴즈 모드로</a>
+        <a href="/" class="btn">홈으로</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const sentences = {{ sentences | tojson }};
+let currentIndex = 0;
+let isFlipped = false;
+let koreanFirst = false;
+let correctCount = 0;
+let wrongCount = 0;
+let sessionStart = Date.now();
+
+function updateCard() {
+    if (currentIndex >= sentences.length) {
+        showComplete();
+        return;
+    }
+    const s = sentences[currentIndex];
+    document.getElementById('frontText').textContent = koreanFirst ? s.korean : s.english;
+    document.getElementById('backText').textContent = koreanFirst ? s.english : s.korean;
+    document.getElementById('currentNum').textContent = currentIndex + 1;
+    document.getElementById('progressFill').style.width =
+        ((currentIndex / sentences.length) * 100) + '%';
+    isFlipped = false;
+    document.getElementById('flashcard').classList.remove('flipped');
+}
+
+function flipCard() {
+    isFlipped = !isFlipped;
+    document.getElementById('flashcard').classList.toggle('flipped');
+}
+
+function nextCard() {
+    if (currentIndex < sentences.length - 1) {
+        currentIndex++;
+        updateCard();
+    }
+}
+
+function prevCard() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        updateCard();
+    }
+}
+
+function markCard(knew) {
+    const s = sentences[currentIndex];
+    fetch('/api/progress/update', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({sentence_id: s.id, knew_it: knew})
+    });
+
+    if (knew) correctCount++;
+    else wrongCount++;
+
+    document.getElementById('correctCount').textContent = correctCount;
+    document.getElementById('wrongCount').textContent = wrongCount;
+
+    currentIndex++;
+    updateCard();
+}
+
+function toggleMode() {
+    koreanFirst = document.getElementById('showKoreanFirst').checked;
+    updateCard();
+}
+
+function showComplete() {
+    document.getElementById('flashcardArea').classList.add('hidden');
+    document.querySelector('.flashcard-controls').classList.add('hidden');
+    document.getElementById('flashcardStats').classList.add('hidden');
+    document.querySelector('.mode-toggle').classList.add('hidden');
+
+    const total = correctCount + wrongCount;
+    document.getElementById('completeTotal').textContent = total;
+    document.getElementById('completeCorrect').textContent = correctCount;
+    document.getElementById('completeWrong').textContent = wrongCount;
+    document.getElementById('completeAccuracy').textContent =
+        total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+    document.getElementById('completeScreen').classList.remove('hidden');
+
+    const duration = Math.round((Date.now() - sessionStart) / 1000);
+    fetch('/api/session', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            session_type: 'flashcard',
+            category_id: sentences[0]?.category_id,
+            sentences_studied: total,
+            correct_answers: correctCount,
+            duration_seconds: duration
+        })
+    });
+}
+
+function restartFlashcards() {
+    currentIndex = 0;
+    correctCount = 0;
+    wrongCount = 0;
+    sessionStart = Date.now();
+    document.getElementById('correctCount').textContent = 0;
+    document.getElementById('wrongCount').textContent = 0;
+    document.getElementById('flashcardArea').classList.remove('hidden');
+    document.querySelector('.flashcard-controls').classList.remove('hidden');
+    document.getElementById('flashcardStats').classList.remove('hidden');
+    document.querySelector('.mode-toggle').classList.remove('hidden');
+    document.getElementById('completeScreen').classList.add('hidden');
+    updateCard();
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    switch(e.key) {
+        case ' ':
+            e.preventDefault();
+            flipCard();
+            break;
+        case 'ArrowLeft':
+            prevCard();
+            break;
+        case 'ArrowRight':
+            nextCard();
+            break;
+        case '1':
+            markCard(true);
+            break;
+        case '2':
+            markCard(false);
+            break;
+    }
+});
+
+updateCard();
+</script>
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block title %}홈{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>영어 학습 앱</h1>
+    <p class="subtitle">명령어를 입력하여 영어 문장을 학습하세요</p>
+
+    <div class="command-box">
+        <div class="command-input-wrapper">
+            <input type="text" id="commandInput" class="command-input"
+                   placeholder="# 회의 영어 추천 50개#  형식으로 입력하세요"
+                   autocomplete="off">
+            <button id="commandBtn" class="btn btn-primary" onclick="executeCommand()">실행</button>
+        </div>
+        <div class="command-examples">
+            <small>예시: <code># 회의 영어 추천 30개#</code> | <code># 여행 영어 추천 20개#</code> | <code># 면접 영어 추천 50개#</code></small>
+        </div>
+    </div>
+</div>
+
+<div id="loadingIndicator" class="loading hidden">
+    <div class="spinner"></div>
+    <p>문장을 불러오는 중...</p>
+</div>
+
+<div id="errorMessage" class="alert alert-error hidden"></div>
+
+<div id="resultArea" class="hidden">
+    <div class="result-header">
+        <h2 id="resultTitle"></h2>
+        <div class="result-actions">
+            <button class="btn btn-sm" onclick="toggleAllTranslations()">번역 전체 보기/숨기기</button>
+            <button class="btn btn-sm btn-primary" id="flashcardBtn" onclick="goFlashcard()">플래시카드 모드</button>
+            <button class="btn btn-sm btn-accent" id="quizBtn" onclick="goQuiz()">퀴즈 모드</button>
+        </div>
+    </div>
+    <div id="sentenceList" class="sentence-list"></div>
+</div>
+
+<section class="categories-section">
+    <h2>카테고리 바로가기</h2>
+    <div class="category-grid">
+        {% for cat in categories %}
+        <a href="/sentences/{{ cat.name_ko }}" class="category-card">
+            <span class="category-icon">{{ cat.icon }}</span>
+            <span class="category-name">{{ cat.name_ko }}</span>
+            <span class="category-count">{{ cat.sentence_count }}문장</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+{% if recent_sessions %}
+<section class="recent-section">
+    <h2>최근 학습</h2>
+    <div class="recent-list">
+        {% for session in recent_sessions %}
+        <div class="recent-item">
+            <span class="session-type">
+                {% if session.session_type == 'flashcard' %}🃏{% elif session.session_type == 'quiz' %}📝{% else %}🔄{% endif %}
+                {{ session.session_type }}
+            </span>
+            <span>{{ session.category_name or '전체' }}</span>
+            <span>{{ session.sentences_studied }}문장</span>
+            <span class="session-date">{{ session.started_at[:16] }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentCategory = '';
+let currentSentences = [];
+
+document.getElementById('commandInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') executeCommand();
+});
+
+function executeCommand() {
+    const command = document.getElementById('commandInput').value.trim();
+    if (!command) return;
+
+    document.getElementById('loadingIndicator').classList.remove('hidden');
+    document.getElementById('errorMessage').classList.add('hidden');
+    document.getElementById('resultArea').classList.add('hidden');
+
+    fetch('/api/command', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({command: command})
+    })
+    .then(r => r.json().then(data => ({status: r.status, data})))
+    .then(({status, data}) => {
+        document.getElementById('loadingIndicator').classList.add('hidden');
+
+        if (status !== 200) {
+            document.getElementById('errorMessage').textContent = data.error;
+            document.getElementById('errorMessage').classList.remove('hidden');
+            return;
+        }
+
+        currentCategory = data.category;
+        currentSentences = data.sentences;
+        displaySentences(data);
+    })
+    .catch(err => {
+        document.getElementById('loadingIndicator').classList.add('hidden');
+        document.getElementById('errorMessage').textContent = '오류가 발생했습니다: ' + err.message;
+        document.getElementById('errorMessage').classList.remove('hidden');
+    });
+}
+
+function displaySentences(data) {
+    document.getElementById('resultTitle').textContent =
+        `${data.category} 영어 (${data.count}문장)`;
+
+    if (data.warning) {
+        document.getElementById('errorMessage').textContent = data.warning;
+        document.getElementById('errorMessage').classList.remove('hidden');
+        document.getElementById('errorMessage').className = 'alert alert-warning';
+    }
+
+    const list = document.getElementById('sentenceList');
+    list.innerHTML = '';
+
+    data.sentences.forEach((s, i) => {
+        const card = document.createElement('div');
+        card.className = 'sentence-card';
+        const diffLabels = {1: '초급', 2: '중급', 3: '고급'};
+        const diffClass = {1: 'beginner', 2: 'intermediate', 3: 'advanced'};
+        card.innerHTML = `
+            <div class="sentence-number">${i + 1}</div>
+            <div class="sentence-content">
+                <div class="sentence-english">${s.english}</div>
+                <div class="sentence-korean hidden" data-id="${s.id}">${s.korean}</div>
+                <button class="btn btn-xs btn-toggle" onclick="toggleTranslation(this)">번역 보기</button>
+            </div>
+            <span class="difficulty-badge ${diffClass[s.difficulty] || 'beginner'}">${diffLabels[s.difficulty] || '초급'}</span>
+        `;
+        list.appendChild(card);
+    });
+
+    document.getElementById('resultArea').classList.remove('hidden');
+    document.getElementById('flashcardBtn').onclick = function() {
+        window.location.href = '/flashcard/' + encodeURIComponent(currentCategory);
+    };
+    document.getElementById('quizBtn').onclick = function() {
+        window.location.href = '/quiz/' + encodeURIComponent(currentCategory);
+    };
+}
+
+function toggleTranslation(btn) {
+    const korean = btn.previousElementSibling;
+    korean.classList.toggle('hidden');
+    btn.textContent = korean.classList.contains('hidden') ? '번역 보기' : '번역 숨기기';
+}
+
+function toggleAllTranslations() {
+    const koreans = document.querySelectorAll('.sentence-korean');
+    const allHidden = Array.from(koreans).every(k => k.classList.contains('hidden'));
+    koreans.forEach(k => {
+        if (allHidden) k.classList.remove('hidden');
+        else k.classList.add('hidden');
+    });
+    document.querySelectorAll('.btn-toggle').forEach(btn => {
+        btn.textContent = allHidden ? '번역 숨기기' : '번역 보기';
+    });
+}
+
+function goFlashcard() {
+    window.location.href = '/flashcard/' + encodeURIComponent(currentCategory);
+}
+
+function goQuiz() {
+    window.location.href = '/quiz/' + encodeURIComponent(currentCategory);
+}
+</script>
+{% endblock %}

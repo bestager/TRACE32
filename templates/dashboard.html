@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}대시보드{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h1>📊 학습 대시보드</h1>
+
+    <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+            <div class="stat-number" id="totalStudied">-</div>
+            <div class="stat-label">학습한 문장</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="totalSentences">-</div>
+            <div class="stat-label">전체 문장</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="streakDays">-</div>
+            <div class="stat-label">연속 학습일</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="todayStudied">-</div>
+            <div class="stat-label">오늘 학습</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="dueReviews">-</div>
+            <div class="stat-label">복습 대기</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="masteredCount">-</div>
+            <div class="stat-label">완료</div>
+        </div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3>학습 단계별 현황</h3>
+            <canvas id="masteryChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>최근 학습 기록</h3>
+            <canvas id="historyChart"></canvas>
+        </div>
+    </div>
+
+    <div class="category-progress" id="categoryProgress">
+        <h3>카테고리별 진도</h3>
+        <div id="categoryBars"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let masteryChart, historyChart;
+
+fetch('/api/stats')
+    .then(r => r.json())
+    .then(data => {
+        // Overview stats
+        document.getElementById('totalStudied').textContent = data.overview.sentences_studied;
+        document.getElementById('totalSentences').textContent = data.overview.total_sentences;
+        document.getElementById('streakDays').textContent = data.overview.study_streak_days + '일';
+        document.getElementById('todayStudied').textContent = data.today.sentences_studied;
+        document.getElementById('dueReviews').textContent = data.today.reviews_remaining;
+        document.getElementById('masteredCount').textContent =
+            data.overview.mastery_breakdown.mastered;
+
+        // Mastery pie chart
+        const mb = data.overview.mastery_breakdown;
+        masteryChart = new Chart(document.getElementById('masteryChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['신규', '학습중', '복습중', '완료'],
+                datasets: [{
+                    data: [mb.new, mb.learning, mb.reviewing, mb.mastered],
+                    backgroundColor: ['#e0e0e0', '#ffd54f', '#42a5f5', '#66bb6a']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // History bar chart
+        const history = data.history.reverse();
+        historyChart = new Chart(document.getElementById('historyChart'), {
+            type: 'bar',
+            data: {
+                labels: history.map(h => h.study_date.slice(5)),
+                datasets: [{
+                    label: '학습 문장 수',
+                    data: history.map(h => h.cnt),
+                    backgroundColor: '#42a5f5'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Category progress bars
+        const bars = document.getElementById('categoryBars');
+        data.by_category.forEach(cat => {
+            const pct = cat.total > 0 ? Math.round((cat.studied / cat.total) * 100) : 0;
+            const div = document.createElement('div');
+            div.className = 'category-bar-item';
+            div.innerHTML = `
+                <div class="category-bar-label">
+                    <span>${cat.icon || '📚'} ${cat.name_ko}</span>
+                    <span>${cat.studied}/${cat.total} (${pct}%)</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${pct}%"></div>
+                </div>
+            `;
+            bars.appendChild(div);
+        });
+    })
+    .catch(err => {
+        console.error('Stats load failed:', err);
+    });
+</script>
+{% endblock %}

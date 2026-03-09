@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+{% block title %}퀴즈 - {{ category.name_ko }}{% endblock %}
+
+{% block content %}
+<div class="quiz-container">
+    <div class="quiz-header">
+        <h2>📝 {{ category.name_ko }} 퀴즈</h2>
+        <div class="quiz-tabs">
+            <button class="tab active" onclick="setQuizType('en_to_ko', this)">영→한</button>
+            <button class="tab" onclick="setQuizType('ko_to_en', this)">한→영</button>
+            <button class="tab" onclick="setQuizType('fill_blank', this)">빈칸 채우기</button>
+        </div>
+        <div class="quiz-progress">
+            <span id="quizProgress">1 / {{ sentences|length }}</span>
+            <span id="quizScore" class="score">점수: 0</span>
+        </div>
+    </div>
+
+    <div id="quizArea">
+        <div class="quiz-question" id="questionArea">
+            <p class="question-text" id="questionText"></p>
+        </div>
+
+        <div id="optionsArea" class="quiz-options"></div>
+
+        <div id="inputArea" class="quiz-input hidden">
+            <input type="text" id="answerInput" class="answer-input"
+                   placeholder="답을 입력하세요..." autocomplete="off">
+            <button class="btn btn-primary" onclick="checkTextAnswer()">확인</button>
+        </div>
+
+        <div id="feedbackArea" class="quiz-feedback hidden">
+            <div id="feedbackContent"></div>
+            <button class="btn btn-primary" onclick="nextQuestion()">다음 문제 →</button>
+        </div>
+
+        <div class="quiz-mode-toggle">
+            <label>
+                <input type="checkbox" id="useTextInput" onchange="toggleInputMode()">
+                직접 입력 모드
+            </label>
+        </div>
+    </div>
+
+    <div class="quiz-complete hidden" id="quizComplete">
+        <h2>퀴즈 완료! 🎉</h2>
+        <div class="complete-stats">
+            <p>전체: <strong id="qTotal"></strong>문제</p>
+            <p>정답: <strong id="qCorrect" class="text-success"></strong>문제</p>
+            <p>오답: <strong id="qWrong" class="text-danger"></strong>문제</p>
+            <p>정답률: <strong id="qAccuracy"></strong>%</p>
+        </div>
+        <div class="complete-actions">
+            <button class="btn btn-primary" onclick="restartQuiz()">다시 도전</button>
+            <a href="/flashcard/{{ category.name_ko }}" class="btn">플래시카드로</a>
+            <a href="/" class="btn">홈으로</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const sentences = {{ sentences | tojson }};
+const allSentences = {{ all_sentences | tojson }};
+let quizType = 'en_to_ko';
+let currentQ = 0;
+let score = 0;
+let wrongCount = 0;
+let useText = false;
+let sessionStart = Date.now();
+
+function setQuizType(type, btn) {
+    quizType = type;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    currentQ = 0;
+    score = 0;
+    wrongCount = 0;
+    document.getElementById('quizScore').textContent = '점수: 0';
+    showQuestion();
+}
+
+function toggleInputMode() {
+    useText = document.getElementById('useTextInput').checked;
+    showQuestion();
+}
+
+function showQuestion() {
+    if (currentQ >= sentences.length) {
+        showQuizComplete();
+        return;
+    }
+
+    const s = sentences[currentQ];
+    document.getElementById('feedbackArea').classList.add('hidden');
+    document.getElementById('quizProgress').textContent =
+        `${currentQ + 1} / ${sentences.length}`;
+
+    if (quizType === 'fill_blank') {
+        const words = s.english.split(' ');
+        const longWords = words.filter(w => w.replace(/[^a-zA-Z]/g, '').length >= 4);
+        const blankWord = longWords.length > 0
+            ? longWords[Math.floor(Math.random() * longWords.length)]
+            : words[Math.floor(Math.random() * words.length)];
+        const blanked = s.english.replace(blankWord, '____');
+        document.getElementById('questionText').innerHTML =
+            `<span class="fill-blank-q">${blanked}</span><br><small class="hint">${s.korean}</small>`;
+
+        if (useText) {
+            document.getElementById('optionsArea').classList.add('hidden');
+            document.getElementById('inputArea').classList.remove('hidden');
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerInput').focus();
+            document.getElementById('answerInput').dataset.correct = blankWord;
+        } else {
+            document.getElementById('inputArea').classList.add('hidden');
+            document.getElementById('optionsArea').classList.remove('hidden');
+            showOptions(blankWord, getDistractorWords(s));
+        }
+    } else {
+        const question = quizType === 'en_to_ko' ? s.english : s.korean;
+        const answer = quizType === 'en_to_ko' ? s.korean : s.english;
+        document.getElementById('questionText').textContent = question;
+
+        if (useText) {
+            document.getElementById('optionsArea').classList.add('hidden');
+            document.getElementById('inputArea').classList.remove('hidden');
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerInput').focus();
+            document.getElementById('answerInput').dataset.correct = answer;
+        } else {
+            document.getElementById('inputArea').classList.add('hidden');
+            document.getElementById('optionsArea').classList.remove('hidden');
+            const distractors = getDistractors(s);
+            showOptions(answer, distractors);
+        }
+    }
+}
+
+function getDistractors(sentence) {
+    const field = quizType === 'en_to_ko' ? 'korean' : 'english';
+    const correct = sentence[field];
+    const others = allSentences
+        .filter(s => s[field] !== correct)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+        .map(s => s[field]);
+    return others;
+}
+
+function getDistractorWords(sentence) {
+    const words = new Set();
+    allSentences.forEach(s => {
+        s.english.split(' ').forEach(w => {
+            if (w.replace(/[^a-zA-Z]/g, '').length >= 4) words.add(w);
+        });
+    });
+    const correct = sentence.english.split(' ');
+    return Array.from(words)
+        .filter(w => !correct.includes(w))
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
+}
+
+function showOptions(correct, distractors) {
+    const options = [correct, ...distractors].sort(() => Math.random() - 0.5);
+    const area = document.getElementById('optionsArea');
+    area.innerHTML = '';
+    options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = opt;
+        btn.onclick = () => checkAnswer(opt, correct);
+        area.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected, correct) {
+    const isCorrect = selected === correct;
+    const s = sentences[currentQ];
+
+    document.querySelectorAll('.quiz-option').forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent === correct) btn.classList.add('correct');
+        if (btn.textContent === selected && !isCorrect) btn.classList.add('wrong');
+    });
+
+    showFeedback(isCorrect, correct, s);
+}
+
+function checkTextAnswer() {
+    const input = document.getElementById('answerInput');
+    const userAnswer = input.value.trim();
+    const correct = input.dataset.correct;
+    const isCorrect = userAnswer.toLowerCase() === correct.toLowerCase();
+    const s = sentences[currentQ];
+
+    input.disabled = true;
+    input.classList.add(isCorrect ? 'correct' : 'wrong');
+    showFeedback(isCorrect, correct, s);
+}
+
+function showFeedback(isCorrect, correct, sentence) {
+    if (isCorrect) {
+        score++;
+        document.getElementById('quizScore').textContent = `점수: ${score}`;
+    } else {
+        wrongCount++;
+    }
+
+    const feedback = document.getElementById('feedbackContent');
+    feedback.innerHTML = isCorrect
+        ? '<span class="text-success">정답입니다! ✓</span>'
+        : `<span class="text-danger">오답입니다 ✗</span><br>정답: <strong>${correct}</strong>`;
+
+    document.getElementById('feedbackArea').classList.remove('hidden');
+
+    fetch('/api/progress/update', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({sentence_id: sentence.id, knew_it: isCorrect})
+    });
+}
+
+function nextQuestion() {
+    currentQ++;
+    showQuestion();
+}
+
+function showQuizComplete() {
+    document.getElementById('quizArea').classList.add('hidden');
+    const total = score + wrongCount;
+    document.getElementById('qTotal').textContent = total;
+    document.getElementById('qCorrect').textContent = score;
+    document.getElementById('qWrong').textContent = wrongCount;
+    document.getElementById('qAccuracy').textContent =
+        total > 0 ? Math.round((score / total) * 100) : 0;
+    document.getElementById('quizComplete').classList.remove('hidden');
+
+    const duration = Math.round((Date.now() - sessionStart) / 1000);
+    fetch('/api/session', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            session_type: 'quiz',
+            category_id: sentences[0]?.category_id,
+            sentences_studied: total,
+            correct_answers: score,
+            duration_seconds: duration
+        })
+    });
+}
+
+function restartQuiz() {
+    currentQ = 0;
+    score = 0;
+    wrongCount = 0;
+    sessionStart = Date.now();
+    document.getElementById('quizScore').textContent = '점수: 0';
+    document.getElementById('quizArea').classList.remove('hidden');
+    document.getElementById('quizComplete').classList.add('hidden');
+    showQuestion();
+}
+
+document.getElementById('answerInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkTextAnswer();
+});
+
+showQuestion();
+</script>
+{% endblock %}

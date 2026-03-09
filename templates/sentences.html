@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ category.name_ko }} 영어{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ category.icon }} {{ category.name_ko }} 영어</h1>
+    <p>{{ category.description_ko }}</p>
+    <div class="header-actions">
+        <button class="btn btn-sm" onclick="toggleAllTranslations()">번역 전체 보기/숨기기</button>
+        <a href="/flashcard/{{ category.name_ko }}" class="btn btn-sm btn-primary">🃏 플래시카드</a>
+        <a href="/quiz/{{ category.name_ko }}" class="btn btn-sm btn-accent">📝 퀴즈</a>
+    </div>
+</div>
+
+<div class="sentence-list">
+    {% for s in sentences %}
+    <div class="sentence-card">
+        <div class="sentence-number">{{ loop.index }}</div>
+        <div class="sentence-content">
+            <div class="sentence-english">{{ s.english }}</div>
+            <div class="sentence-korean hidden">{{ s.korean }}</div>
+            <button class="btn btn-xs btn-toggle" onclick="toggleTranslation(this)">번역 보기</button>
+        </div>
+        <div class="sentence-meta">
+            <span class="difficulty-badge {{ 'beginner' if s.difficulty == 1 else ('intermediate' if s.difficulty == 2 else 'advanced') }}">
+                {{ '초급' if s.difficulty == 1 else ('중급' if s.difficulty == 2 else '고급') }}
+            </span>
+            {% if s.mastery_level > 0 %}
+            <span class="mastery-badge mastery-{{ s.mastery_level }}">
+                {{ ['', '학습중', '복습중', '완료'][s.mastery_level] }}
+            </span>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleTranslation(btn) {
+    const korean = btn.previousElementSibling;
+    korean.classList.toggle('hidden');
+    btn.textContent = korean.classList.contains('hidden') ? '번역 보기' : '번역 숨기기';
+}
+
+function toggleAllTranslations() {
+    const koreans = document.querySelectorAll('.sentence-korean');
+    const allHidden = Array.from(koreans).every(k => k.classList.contains('hidden'));
+    koreans.forEach(k => {
+        if (allHidden) k.classList.remove('hidden');
+        else k.classList.add('hidden');
+    });
+    document.querySelectorAll('.btn-toggle').forEach(btn => {
+        btn.textContent = allHidden ? '번역 숨기기' : '번역 보기';
+    });
+}
+</script>
+{% endblock %}

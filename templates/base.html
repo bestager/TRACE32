@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}영어 학습{% endblock %} - English Learning App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">📖 영어 학습</a>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">🏠 홈</a>
+            <a href="/review" class="nav-link">
+                🔄 복습
+                {% if due_count is defined and due_count > 0 %}
+                    <span class="badge">{{ due_count }}</span>
+                {% endif %}
+            </a>
+            <a href="/dashboard" class="nav-link">📊 대시보드</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

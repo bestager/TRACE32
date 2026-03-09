@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}복습{% endblock %}
+
+{% block content %}
+<div class="review-container">
+    <div class="review-header">
+        <h2>🔄 오늘의 복습</h2>
+        <p id="reviewCount">남은 복습: <strong>{{ sentences|length }}</strong>문장</p>
+    </div>
+
+    {% if sentences|length == 0 %}
+    <div class="empty-state">
+        <h3>오늘의 복습 완료! 🎉</h3>
+        <p>복습할 문장이 없습니다. 새로운 문장을 학습하세요!</p>
+        <a href="/" class="btn btn-primary">홈으로 돌아가기</a>
+    </div>
+    {% else %}
+    <div id="reviewArea">
+        <div class="review-card" id="reviewCard">
+            <div class="review-category" id="reviewCategory"></div>
+            <div class="review-english" id="reviewEnglish"></div>
+            <div class="review-korean hidden" id="reviewKorean"></div>
+            <button class="btn btn-sm" id="showAnswerBtn" onclick="showAnswer()">답 보기 (Space)</button>
+        </div>
+
+        <div class="review-grades hidden" id="gradeButtons">
+            <p>얼마나 잘 기억하셨나요?</p>
+            <div class="grade-grid">
+                <button class="grade-btn grade-0" onclick="gradeReview(0)">전혀 모름<br><small>0</small></button>
+                <button class="grade-btn grade-1" onclick="gradeReview(1)">모름<br><small>1</small></button>
+                <button class="grade-btn grade-2" onclick="gradeReview(2)">어려움<br><small>2</small></button>
+                <button class="grade-btn grade-3" onclick="gradeReview(3)">보통<br><small>3</small></button>
+                <button class="grade-btn grade-4" onclick="gradeReview(4)">좋음<br><small>4</small></button>
+                <button class="grade-btn grade-5" onclick="gradeReview(5)">완벽<br><small>5</small></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="review-complete hidden" id="reviewComplete">
+        <h2>오늘의 복습 완료! 🎉</h2>
+        <div class="complete-stats">
+            <p>복습 완료: <strong id="reviewedCount"></strong>문장</p>
+        </div>
+        <div class="complete-actions">
+            <a href="/" class="btn btn-primary">홈으로</a>
+            <a href="/dashboard" class="btn">대시보드 보기</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const sentences = {{ sentences | tojson }};
+let currentIndex = 0;
+let reviewedCount = 0;
+
+function updateReviewCard() {
+    if (currentIndex >= sentences.length) {
+        showReviewComplete();
+        return;
+    }
+
+    const s = sentences[currentIndex];
+    document.getElementById('reviewCategory').textContent = s.category_name;
+    document.getElementById('reviewEnglish').textContent = s.english;
+    document.getElementById('reviewKorean').textContent = s.korean;
+    document.getElementById('reviewKorean').classList.add('hidden');
+    document.getElementById('showAnswerBtn').classList.remove('hidden');
+    document.getElementById('gradeButtons').classList.add('hidden');
+    document.getElementById('reviewCount').innerHTML =
+        `남은 복습: <strong>${sentences.length - currentIndex}</strong>문장`;
+}
+
+function showAnswer() {
+    document.getElementById('reviewKorean').classList.remove('hidden');
+    document.getElementById('showAnswerBtn').classList.add('hidden');
+    document.getElementById('gradeButtons').classList.remove('hidden');
+}
+
+function gradeReview(quality) {
+    const s = sentences[currentIndex];
+
+    fetch('/api/review/grade', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({sentence_id: s.id, quality: quality})
+    });
+
+    reviewedCount++;
+    currentIndex++;
+    updateReviewCard();
+}
+
+function showReviewComplete() {
+    document.getElementById('reviewArea').classList.add('hidden');
+    document.getElementById('reviewedCount').textContent = reviewedCount;
+    document.getElementById('reviewComplete').classList.remove('hidden');
+
+    fetch('/api/session', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            session_type: 'review',
+            sentences_studied: reviewedCount,
+            correct_answers: 0,
+            duration_seconds: 0
+        })
+    });
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === ' ') {
+        e.preventDefault();
+        if (document.getElementById('reviewKorean').classList.contains('hidden')) {
+            showAnswer();
+        }
+    }
+    if (e.key >= '0' && e.key <= '5' &&
+        !document.getElementById('gradeButtons').classList.contains('hidden')) {
+        gradeReview(parseInt(e.key));
+    }
+});
+
+if (sentences.length > 0) updateReviewCard();
+</script>
+{% endblock %}

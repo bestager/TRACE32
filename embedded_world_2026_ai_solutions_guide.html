@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedded World 2026 - AI MCP & Collaborative RAG 솔루션 가이드</title>
+    <style>
+        :root {
+            --primary: #1a237e;
+            --secondary: #0d47a1;
+            --accent: #ff6f00;
+            --bg-light: #f5f7fa;
+            --bg-card: #ffffff;
+            --text-dark: #212121;
+            --text-mid: #546e7a;
+            --border: #e0e0e0;
+            --success: #2e7d32;
+            --info: #0277bd;
+            --warning: #f57f17;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+        }
+        .header h1 { font-size: 2.2em; margin-bottom: 8px; position: relative; }
+        .header .subtitle { font-size: 1.1em; opacity: 0.9; position: relative; }
+        .header .event-info {
+            display: inline-flex;
+            gap: 20px;
+            margin-top: 16px;
+            background: rgba(255,255,255,0.15);
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            position: relative;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 1.6em;
+            color: var(--primary);
+            margin: 36px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title .icon { font-size: 1.2em; }
+
+        /* Company Cards */
+        .company-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 28px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .company-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .card-header.mcp { background: linear-gradient(135deg, #1565c0, #0d47a1); color: white; }
+        .card-header.rag { background: linear-gradient(135deg, #2e7d32, #1b5e20); color: white; }
+        .card-header.both { background: linear-gradient(135deg, #6a1b9a, #4a148c); color: white; }
+        .card-header.onsite { background: linear-gradient(135deg, #e65100, #bf360c); color: white; }
+
+        .company-name { font-size: 1.4em; font-weight: 700; }
+        .company-hq { font-size: 0.85em; opacity: 0.9; }
+
+        .badge-container { display: flex; gap: 8px; flex-wrap: wrap; }
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.78em;
+            font-weight: 600;
+            background: rgba(255,255,255,0.25);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .card-body { padding: 24px; }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 768px) {
+            .info-grid { grid-template-columns: 1fr; }
+        }
+
+        .info-box {
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 16px;
+            border-left: 4px solid var(--secondary);
+        }
+        .info-box.reason { border-left-color: var(--accent); }
+        .info-box.solution { border-left-color: var(--info); }
+        .info-box.booth { border-left-color: var(--success); }
+        .info-box.questions { border-left-color: #7b1fa2; }
+
+        .info-box h4 {
+            font-size: 0.9em;
+            color: var(--text-mid);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+        .info-box ul li {
+            padding: 4px 0 4px 18px;
+            position: relative;
+            font-size: 0.92em;
+        }
+        .info-box ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .info-box p { font-size: 0.92em; }
+
+        /* Booth Location Highlight */
+        .booth-highlight {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border: 2px solid var(--success);
+            border-radius: 8px;
+            padding: 14px 20px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .booth-highlight .pin { font-size: 1.5em; }
+        .booth-highlight .location { font-weight: 700; color: var(--success); font-size: 1.1em; }
+        .booth-highlight .note { font-size: 0.85em; color: var(--text-mid); }
+
+        .booth-na {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            border: 2px dashed var(--warning);
+            border-radius: 8px;
+            padding: 14px 20px;
+            margin-top: 12px;
+            font-size: 0.92em;
+        }
+
+        /* Questions section */
+        .questions-list {
+            background: #f3e5f5;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+        .questions-list h4 {
+            color: #6a1b9a;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        .questions-list ol {
+            padding-left: 20px;
+        }
+        .questions-list ol li {
+            padding: 5px 0;
+            font-size: 0.9em;
+        }
+
+        /* Contact Info */
+        .contact-bar {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            background: var(--secondary);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .contact-link:hover { background: var(--primary); }
+
+        /* Pricing Tag */
+        .pricing-tag {
+            display: inline-block;
+            background: #fff8e1;
+            border: 1px solid #ffd54f;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #f57f17;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        /* Summary Table */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .summary-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 0.9em;
+        }
+        .summary-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.88em;
+        }
+        .summary-table tr:last-child td { border-bottom: none; }
+        .summary-table tr:hover { background: #f0f4ff; }
+
+        .tag-mcp { background: #e3f2fd; color: #1565c0; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 600; }
+        .tag-rag { background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 600; }
+        .tag-both { background: #f3e5f5; color: #6a1b9a; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 600; }
+        .tag-onsite { background: #fbe9e7; color: #bf360c; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 600; }
+
+        /* Action Plan */
+        .action-plan {
+            background: linear-gradient(135deg, #fff8e1, #fff3e0);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 30px 0;
+        }
+        .action-plan h3 {
+            color: var(--accent);
+            margin-bottom: 16px;
+            font-size: 1.2em;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            align-items: flex-start;
+        }
+        .timeline-time {
+            min-width: 100px;
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 0.9em;
+        }
+        .timeline-content {
+            flex: 1;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+        .timeline-content strong { color: var(--primary); }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-mid);
+            font-size: 0.85em;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+
+        /* Print Styles */
+        @media print {
+            body { background: white; }
+            .company-card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+            .header { background: var(--primary) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== HEADER ==================== -->
+<div class="header">
+    <h1>Embedded World 2026 Nuremberg</h1>
+    <div class="subtitle">AI MCP Server & Collaborative RAG 솔루션 업체 가이드</div>
+    <div class="event-info">
+        <span>2026.03.10 (화) ~ 03.12 (목)</span>
+        <span>|</span>
+        <span>Nuremberg Messe, Germany</span>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- ==================== OVERVIEW TABLE ==================== -->
+    <div class="section-title"><span class="icon">&#128202;</span> 추천 업체 한눈에 보기</div>
+
+    <table class="summary-table">
+        <thead>
+            <tr>
+                <th>업체명</th>
+                <th>본사</th>
+                <th>분야</th>
+                <th>부스 위치</th>
+                <th>핵심 키워드</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>INSIDE Industry Association</strong><br>(DAC.digital / AITIA)</td>
+                <td>네덜란드 / 헝가리</td>
+                <td><span class="tag-onsite">현장전시</span></td>
+                <td><strong>Hall 4, Booth 4-358</strong></td>
+                <td>에이전틱 AI, 커스텀 솔루션, IoT</td>
+            </tr>
+            <tr>
+                <td><strong>K2view</strong></td>
+                <td>이스라엘 / 미국 달라스</td>
+                <td><span class="tag-both">MCP + RAG</span></td>
+                <td>온라인 컨택</td>
+                <td>MCP 오케스트레이터, 데이터 프로덕트</td>
+            </tr>
+            <tr>
+                <td><strong>CData Connect AI</strong></td>
+                <td>미국 노스캐롤라이나</td>
+                <td><span class="tag-mcp">MCP</span></td>
+                <td>온라인 컨택</td>
+                <td>관리형 MCP, 300+ 데이터소스</td>
+            </tr>
+            <tr>
+                <td><strong>Squirro</strong></td>
+                <td>스위스 취리히</td>
+                <td><span class="tag-rag">RAG</span></td>
+                <td>온라인 컨택</td>
+                <td>Enhanced RAG, 지식관리, GraphRAG</td>
+            </tr>
+            <tr>
+                <td><strong>Orq.ai</strong></td>
+                <td>네덜란드 암스테르담</td>
+                <td><span class="tag-rag">RAG</span></td>
+                <td>온라인 컨택</td>
+                <td>RAG-as-a-Service, 협업 플랫폼</td>
+            </tr>
+            <tr>
+                <td><strong>Vectara</strong></td>
+                <td>미국 캘리포니아</td>
+                <td><span class="tag-both">MCP + RAG</span></td>
+                <td>온라인 컨택</td>
+                <td>시맨틱 검색, 다국어 RAG</td>
+            </tr>
+            <tr>
+                <td><strong>Fraunhofer ITWM</strong></td>
+                <td>독일 카이저슬라우테른</td>
+                <td><span class="tag-onsite">현장전시</span></td>
+                <td><strong>Hall 4, Stand 422</strong></td>
+                <td>임베디드 AI, NASE, Edge AI</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ==================== SECTION 1: ON-SITE EXHIBITORS ==================== -->
+    <div class="section-title"><span class="icon">&#127981;</span> 현장 전시 업체 (부스 방문 가능)</div>
+
+    <!-- INSIDE Industry Association -->
+    <div class="company-card">
+        <div class="card-header onsite">
+            <div>
+                <div class="company-name">INSIDE Industry Association (DAC.digital / AITIA)</div>
+                <div class="company-hq">네덜란드 / 헝가리 &mdash; 유럽 기술 플랫폼</div>
+            </div>
+            <div class="badge-container">
+                <span class="badge">현장 전시</span>
+                <span class="badge">에이전틱 AI</span>
+                <span class="badge">커스텀 솔루션</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="info-grid">
+                <div class="info-box reason">
+                    <h4>&#9733; 주요 선택 이유</h4>
+                    <ul>
+                        <li><strong>현장에서 직접 만남 가능</strong> &mdash; Embedded World 2026에 실제 부스 운영</li>
+                        <li>DAC.digital: 유럽 선도 AI 기업, <strong>커스텀 에이전틱 AI 솔루션</strong> 설계/구축/확장 전문</li>
+                        <li>AITIA: AI 및 산업 IoT 분야 혁신 시스템 개발 전문 R&D 기업</li>
+                        <li>130sqm 규모에 <strong>16개 SME 파트너</strong>가 한 곳에 모여 다양한 솔루션 비교 가능</li>
+                        <li>MCP 서버 기반 AI 통합 및 에이전틱 워크플로우 관련 논의 가능</li>
+                    </ul>
+                </div>
+                <div class="info-box solution">
+                    <h4>&#128736; 솔루션 설명</h4>
+                    <p><strong>DAC.digital</strong>은 기업의 업무 자동화와 인간 작업 지원을 위한 맞춤형 에이전틱 AI 솔루션을 설계하고 구축합니다. 기업의 기존 시스템과 데이터를 AI 에이전트에 연결하여 정보 자산의 AI화를 실현합니다.</p>
+                    <br>
+                    <p><strong>AITIA</strong>는 통신, 네트워크 보안, AI, 산업 IoT 분야에서 혁신적인 시스템을 개발하며, 복잡한 서비스 포트폴리오로 이를 지원합니다.</p>
+                    <br>
+                    <p>INSIDE 부스에는 Verum Software Tools, Cubit Innovation Labs, ROPARDO, Virtual Vehicle Research 등 16개 파트너사가 함께 전시합니다.</p>
+                </div>
+            </div>
+
+            <div class="booth-highlight">
+                <span class="pin">&#128205;</span>
+                <div>
+                    <div class="location">Hall 4, Booth 4-358</div>
+                    <div class="note">INSIDE Industry Association 공동 부스 &mdash; 130sqm, 16개 SME 파트너 참여</div>
+                </div>
+            </div>
+
+            <div class="questions-list">
+                <h4>&#128172; 추천 문의 내용</h4>
+                <ol>
+                    <li>MCP(Model Context Protocol) 서버를 활용한 기업 내부 데이터 연동 경험이 있는지? 구체적인 사례는?</li>
+                    <li>에이전틱 AI 솔루션을 기존 엔터프라이즈 시스템(SAP, ERP 등)과 통합하는 데 소요되는 기간과 비용은?</li>
+                    <li>한국/아시아 시장 고객 레퍼런스가 있는지? 원격 지원 및 협업 체계는 어떻게 되는지?</li>
+                    <li>RAG 파이프라인 구축 시 다국어(한국어 포함) 지원 가능 여부?</li>
+                    <li>PoC(Proof of Concept) 진행 프로세스와 예상 타임라인은?</li>
+                    <li>데이터 보안/개인정보 보호(GDPR, 한국 PIPA) 대응 방안은?</li>
+                </ol>
+            </div>
+
+            <div class="contact-bar">
+                <a href="https://inside-association.eu/embedded-world-2026/" class="contact-link" target="_blank">&#127760; INSIDE 공식 페이지</a>
+                <a href="https://www.dac.digital" class="contact-link" target="_blank">&#127760; DAC.digital</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fraunhofer ITWM -->
+    <div class="company-card">
+        <div class="card-header onsite">
+            <div>
+                <div class="company-name">Fraunhofer ITWM</div>
+                <div class="company-hq">독일 카이저슬라우테른 &mdash; 프라운호퍼 산업수학연구소</div>
+            </div>
+            <div class="badge-container">
+                <span class="badge">현장 전시</span>
+                <span class="badge">Embedded AI</span>
+                <span class="badge">연구기관</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="info-grid">
+                <div class="info-box reason">
+                    <h4>&#9733; 주요 선택 이유</h4>
+                    <ul>
+                        <li>독일 최대 응용연구기관 프라운호퍼 소속 &mdash; <strong>기술 신뢰성 최상</strong></li>
+                        <li><strong>NASE</strong> (Neural Architecture Search for Embedded Applications) 시스템 시연</li>
+                        <li>에지 AI 최적화, 뉴로모픽 컴퓨팅 분야 선도</li>
+                        <li>산업 파트너와의 공동 연구 프로젝트 진행 가능</li>
+                    </ul>
+                </div>
+                <div class="info-box solution">
+                    <h4>&#128736; 솔루션 설명</h4>
+                    <p>Fraunhofer ITWM은 AI 모델을 임베디드 하드웨어에 최적화하여 배포하는 기술을 연구합니다. <strong>NASE</strong> 시스템은 타겟 하드웨어 플랫폼에 맞는 최적의 신경망 구조를 자동으로 탐색합니다.</p>
+                    <br>
+                    <p><strong>STANCE</strong> 동맹을 통해 뉴로모픽 및 스파이킹 기반의 에너지 효율적인 AI 기술을 산업에 적용하는 연구를 진행합니다. 에지에서의 AI 추론 최적화가 핵심입니다.</p>
+                </div>
+            </div>
+
+            <div class="booth-highlight">
+                <span class="pin">&#128205;</span>
+                <div>
+                    <div class="location">Hall 4, Stand 422</div>
+                    <div class="note">Fraunhofer 공동 부스 &mdash; 다수의 프라운호퍼 연구소 공동 전시</div>
+                </div>
+            </div>
+
+            <div class="questions-list">
+                <h4>&#128172; 추천 문의 내용</h4>
+                <ol>
+                    <li>NASE 기술을 활용하여 기업 자체 AI 모델을 엣지 디바이스에 최적화하는 협업 가능성?</li>
+                    <li>산업 파트너십 프로그램 참여 조건 및 한국 기업과의 공동 연구 사례?</li>
+                    <li>엣지 AI와 클라우드 RAG 시스템의 하이브리드 아키텍처 구현 경험?</li>
+                    <li>에너지 효율적 AI 추론을 위한 STANCE 동맹 참여 방법?</li>
+                </ol>
+            </div>
+
+            <div class="contact-bar">
+                <a href="https://www.itwm.fraunhofer.de/en/fairs_events/2026/2026_03_10_embedded_2026_en.html" class="contact-link" target="_blank">&#127760; Fraunhofer ITWM 전시 안내</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SECTION 2: MCP SERVER ==================== -->
+    <div class="section-title"><span class="icon">&#128268;</span> AI MCP 서버 &mdash; 기업 정보자산 AI화 솔루션</div>
+
+    <!-- K2view -->
+    <div class="company-card">
+        <div class="card-header both">
+            <div>
+                <div class="company-name">K2view</div>
+                <div class="company-hq">이스라엘 요크네암 / 미국 달라스 &mdash; 독일 지사 보유</div>
+            </div>
+            <div class="badge-container">
+                <span class="badge">MCP + RAG</span>
+                <span class="badge">데이터 프로덕트</span>
+                <span class="badge">Gartner Visionary</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="info-grid">
+                <div class="info-box reason">
+                    <h4>&#9733; 주요 선택 이유</h4>
+                    <ul>
+                        <li><strong>MCP 서버 + RAG 통합 솔루션</strong>을 동시에 제공하는 유일한 플랫폼 중 하나</li>
+                        <li>데이터 프로덕트가 자동으로 MCP 서버로 노출 &mdash; <strong>설정 최소화</strong></li>
+                        <li>SAP, Salesforce, SQL Server 등 주요 엔터프라이즈 시스템 통합 지원</li>
+                        <li>Gartner Magic Quadrant 데이터 통합 도구 부문 <strong>3년 연속 Visionary</strong></li>
+                        <li><strong>독일에 지사</strong>가 있어 현지 지원 가능</li>
+                        <li>특허받은 시맨틱 데이터 레이어로 정형/비정형 데이터 통합 처리</li>
+                    </ul>
+                </div>
+                <div class="info-box solution">
+                    <h4>&#128736; 솔루션 설명</h4>
+                    <p><strong>K2view Data Product Platform</strong>은 기업 데이터를 엔티티 중심의 마이크로 데이터베이스로 변환하여, 실시간으로 안전하고 컨텍스트가 풍부한 비즈니스 자산 뷰를 제공합니다.</p>
+                    <br>
+                    <p><strong>MCP 오케스트레이터</strong>가 프롬프트를 정확하고 안전하며 컴플라이언스를 준수하는 컨텍스트로 변환합니다. Text-to-SQL, API, 데이터 서비스, 벡터 검색 등 적절한 도구를 자동 선택하여 GenAI 앱에 항상 최신의 거버닝된 정보를 대화 속도로 전달합니다.</p>
+                    <br>
+                    <p>엔터프라이즈 MCP 구현에 필요한 통합 데이터 노출, 거버넌스, 프라이버시, 컴플라이언스 제어를 단일 플랫폼에서 처리합니다.</p>
+                </div>
+            </div>
+
+            <div class="booth-na">
+                &#9888;&#65039; <strong>Embedded World 전시 미확인</strong> &mdash; 독일 지사 보유로 현지 미팅 요청 가능. 뉘렌베르크 방문 중 독일 지사 담당자와의 별도 미팅을 추천합니다.
+            </div>
+
+            <div class="questions-list">
+                <h4>&#128172; 추천 문의 내용</h4>
+                <ol>
+                    <li>K2view MCP 서버를 통해 기존 SAP/ERP 데이터를 AI 에이전트에 연결하는 구체적 프로세스는?</li>
+                    <li>마이크로 데이터베이스 아키텍처의 보안/격리 수준은? 산업별 컴플라이언스(금융, 제조) 대응?</li>
+                    <li>Claude, ChatGPT 등 다양한 LLM과의 MCP 연동 시 성능 차이나 제한사항은?</li>
+                    <li>한국어 데이터 처리 및 다국어 시맨틱 검색 지원 현황?</li>
+                    <li>독일 지사를 통한 유럽 기반 PoC 진행이 가능한지? 예상 비용 및 기간?</li>
+                    <li>데이터 프로덕트 구축부터 MCP 서버 배포까지 전체 구현 타임라인은?</li>
+                </ol>
+            </div>
+
+            <div class="contact-bar">
+                <a href="https://www.k2view.com/contact" class="contact-link" target="_blank">&#128231; 컨택 요청</a>
+                <a href="https://www.k2view.com/solutions/mcp-integration/" class="contact-link" target="_blank">&#127760; MCP 솔루션 상세</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- CData Connect AI -->
+    <div class="company-card">
+        <div class="card-header mcp">
+            <div>
+                <div class="company-name">CData Connect AI</div>
+                <div class="company-hq">미국 노스캐롤라이나 &mdash; 글로벌 데이터 연결 전문기업</div>
+            </div>
+            <div class="badge-container">
+                <span class="badge">MCP 전문</span>
+                <span class="badge">300+ 커넥터</span>
+                <span class="badge">SOC2/GDPR</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="info-grid">
+                <div class="info-box reason">
+                    <h4>&#9733; 주요 선택 이유</h4>
+                    <ul>
+                        <li><strong>최초의 관리형 MCP 플랫폼</strong> &mdash; 엔터프라이즈 MCP 분야 선도</li>
+                        <li><strong>300개 이상의 비즈니스 시스템</strong>에 실시간 연결 가능</li>
+                        <li>Claude, ChatGPT, Copilot 등 주요 AI 어시스턴트와 즉시 연동</li>
+                        <li>포인트 앤 클릭 설정 &mdash; <strong>코딩 없이 MCP 서버 구축</strong></li>
+                        <li>SOC2, GDPR, ISO 27001 인증 &mdash; 엔터프라이즈급 보안</li>
+                        <li>사용자 기반 권한 상속 &mdash; AI가 사용자 권한 범위 내에서만 데이터 접근</li>
+                    </ul>
+                </div>
+                <div class="info-box solution">
+                    <h4>&#128736; 솔루션 설명</h4>
+                    <p><strong>CData Connect AI</strong>는 AI 어시스턴트, 에이전트, 자동화 워크플로우를 300+ 비즈니스 시스템의 라이브 데이터에 안전하게 연결하는 관리형 MCP 플랫폼입니다.</p>
+                    <br>
+                    <p>기존 데이터를 웨어하우스에 복사하는 것이 아니라, <strong>데이터를 원래 위치에서 실시간으로 접근</strong>하면서 메타데이터, 관계, 사용자 권한을 보존합니다. AI 에이전트가 외부 시스템에 질문하고 작업을 수행할 때, 원시 데이터를 노출하지 않는 번역기 역할을 합니다.</p>
+                    <br>
+                    <p>n8n, LangChain, LangGraph 등의 워크플로우를 영구 MCP 도구로 등록할 수 있으며, 단일 MCP 서버 레이어로 여러 AI 클라이언트를 동시에 서비스합니다.</p>
+                </div>
+            </div>
+
+            <div class="booth-na">
+                &#9888;&#65039; <strong>Embedded World 전시 미확인</strong> &mdash; 온라인 데모 및 무료 체험판 제공. 전시 기간 중 온라인 미팅 예약을 추천합니다.
+            </div>
+
+            <div style="margin-top: 12px;">
+                <span class="pricing-tag">Standard: $79/월(연간) | Growth: $159/월(연간) | Business: 맞춤견적</span>
+            </div>
+
+            <div class="questions-list">
+                <h4>&#128172; 추천 문의 내용</h4>
+                <ol>
+                    <li>한국 기업에서 많이 사용하는 시스템(네이버 클라우드, 카카오 API 등)과의 커넥터 지원 여부?</li>
+                    <li>On-premise 배포 옵션이 있는지? 클라우드 전용인 경우 한국 리전 지원?</li>
+                    <li>MCP 서버를 통해 연결된 데이터의 캐싱 전략 및 응답 지연시간(latency)?</li>
+                    <li>Business 플랜의 커스텀 MCP 도구 개발 범위와 지원 사항?</li>
+                    <li>기존 RAG 시스템(LangChain, LlamaIndex)과의 통합 방법 및 모범 사례?</li>
+                    <li>멀티 테넌트 환경에서의 데이터 격리 및 접근 제어 방식?</li>
+                </ol>
+            </div>
+
+            <div class="contact-bar">
+                <a href="https://www.cdata.com/ai/pricing/" class="contact-link" target="_blank">&#128176; 가격 확인</a>
+                <a href="https://www.cdata.com/solutions/mcp/" class="contact-link" target="_blank">&#127760; MCP 솔루션 상세</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SECTION 3: COLLABORATIVE RAG ==================== -->
+    <div class="section-title"><span class="icon">&#129309;</span> Collaborative RAG &mdash; 전세계 공동 작업 RAG 솔루션</div>
+
+    <!-- Squirro -->
+    <div class="company-card">
+        <div class="card-header rag">
+            <div>
+                <div class="company-name">Squirro</div>
+                <div class="company-hq">스위스 취리히 &mdash; 미국, 영국, 싱가포르 지사</div>
+            </div>
+            <div class="badge-container">
+                <span class="badge">Enhanced RAG</span>
+                <span class="badge">Gartner Leader</span>
+                <span class="badge">10년+ 경험</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="info-grid">
+                <div class="info-box reason">
+                    <h4>&#9733; 주요 선택 이유</h4>
+                    <ul>
+                        <li><strong>엔터프라이즈 RAG 분야 10년 이상 경험</strong> &mdash; 가장 성숙한 솔루션</li>
+                        <li>Gartner 2025 AI 지식관리 &amp; 생산성 플랫폼 <strong>Leader</strong> 선정</li>
+                        <li>Henkel과 45+ 데이터소스, 300,000+ 검색결과 통합 협업 RAG 구현 실증</li>
+                        <li>유럽중앙은행, 영란은행, Standard Chartered 등 <strong>글로벌 금융기관 레퍼런스</strong></li>
+                        <li>Agent Framework + Knowledge Graph + Privacy Layer 통합</li>
+                        <li>스위스 본사 &mdash; <strong>유럽 데이터 보호 기준 최고 수준</strong></li>
+                    </ul>
+                </div>
+                <div class="info-box solution">
+                    <h4>&#128736; 솔루션 설명</h4>
+                    <p><strong>Squirro Enhanced RAG</strong>는 단순한 문서 검색 + LLM 응답 생성을 넘어, 에이전트 프레임워크, 지식 그래프, 프라이버시 레이어를 통합한 차세대 엔터프라이즈 GenAI 플랫폼입니다.</p>
+                    <br>
+                    <p><strong>협업 RAG 구현:</strong> 45개 이상의 다양한 데이터소스를 통합하고, 조직 내 여러 팀이 동일한 지식 베이스를 공유하면서 중복을 줄이고 혁신을 촉진합니다. Henkel 사례에서 입증된 바와 같이, 글로벌 분산 팀이 동일한 RAG 파이프라인을 통해 지식을 공유하고 검색합니다.</p>
+                    <br>
+                    <p>LLM 독립적(Agnostic) 설계로 다양한 LLM을 교체/병행 사용할 수 있어, 특정 벤더 종속(lock-in) 없이 미래 대비가 가능합니다.</p>
+                </div>
+            </div>
+
+            <div class="booth-na">
+                &#9888;&#65039; <strong>Embedded World 전시 미확인</strong> &mdash; 스위스 취리히 본사 기준 뉘렌베르크까지 약 4시간 거리. 전시 기간 중 온라인 데모 또는 유럽 현지 미팅 요청을 추천합니다.
+            </div>
+
+            <div class="questions-list">
+                <h4>&#128172; 추천 문의 내용</h4>
+                <ol>
+                    <li>Henkel 사례처럼 <strong>글로벌 분산 팀</strong>이 공동으로 RAG을 구축/운영하는 구체적 워크플로우는?</li>
+                    <li>여러 국가/법인의 데이터를 단일 RAG 파이프라인에 통합할 때 <strong>데이터 주권/거버넌스</strong> 대응 방안?</li>
+                    <li>Knowledge Graph와 벡터 검색의 하이브리드 접근법의 정확도 개선 수치?</li>
+                    <li>한국어 데이터 처리 성능 및 다국어 환경에서의 검색 정확도?</li>
+                    <li>MCP 서버와의 통합 가능성 또는 로드맵?</li>
+                    <li>PoC 진행 시 필요한 최소 데이터 요구사항 및 기간은?</li>
+                    <li>아시아/태평양 지역 지원 체계(싱가포르 지사 활용)?</li>
+                </ol>
+            </div>
+
+            <div class="contact-bar">
+                <a href="https://squirro.com/" class="contact-link" target="_blank">&#127760; 공식 웹사이트</a>
+                <a href="https://squirro.com/knowledge-management-solution" class="contact-link" target="_blank">&#128218; 지식관리 솔루션</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orq.ai -->
+    <div class="company-card">
+        <div class="card-header rag">
+            <div>
+                <div class="company-name">Orq.ai</div>
+                <div class="company-hq">네덜란드 암스테르담 &mdash; EU AI Act 준수, SOC2 인증</div>
+            </div>
+            <div class="badge-container">
+                <span class="badge">RAG-as-a-Service</span>
+                <span class="badge">협업 플랫폼</span>
+                <span class="badge">Gartner 인정</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="info-grid">
+                <div class="info-box reason">
+                    <h4>&#9733; 주요 선택 이유</h4>
+                    <ul>
+                        <li><strong>RAG-as-a-Service</strong> &mdash; 복잡한 인프라 구축 없이 즉시 사용 가능</li>
+                        <li><strong>팀 단위 협업 기능</strong> 내장 &mdash; 소프트웨어, 제품, AI 팀이 함께 RAG 구축</li>
+                        <li>Gartner 2025 Generative AI Engineering <strong>Emerging Leader</strong> 선정</li>
+                        <li>SOC2 인증, GDPR 준수, <strong>EU AI Act 대응</strong></li>
+                        <li>청크 수준까지 <strong>구조화된 인용 정보</strong> 제공 &mdash; 응답의 투명성 확보</li>
+                        <li>암스테르담 소재 &mdash; 뉘렌베르크에서 접근 용이</li>
+                    </ul>
+                </div>
+                <div class="info-box solution">
+                    <h4>&#128736; 솔루션 설명</h4>
+                    <p><strong>Orq.ai RAG-as-a-Service</strong>는 LLM을 사내 데이터소스에 연결하는 관리형 솔루션입니다. PDF, HTML, Markdown, 텍스트 파일, 제품 문서, 구조화된 데이터를 업로드하면 자동으로 수집/인덱싱하여 즉시 쿼리 가능한 지식 베이스로 변환합니다.</p>
+                    <br>
+                    <p><strong>협업 RAG 워크플로우:</strong> 여러 팀이 동일한 플랫폼에서 임베딩, 청킹 전략, 검색 로직(키워드, 벡터, 하이브리드)을 커스터마이징하고, 내장된 트레이싱/디버깅 도구로 RAG 평가를 공동 수행합니다.</p>
+                    <br>
+                    <p>모든 응답에 청크 수준의 정확한 인용 정보가 포함되어, 글로벌 팀이 답변의 출처를 즉시 확인하고 신뢰할 수 있습니다.</p>
+                </div>
+            </div>
+
+            <div class="booth-na">
+                &#9888;&#65039; <strong>Embedded World 전시 미확인</strong> &mdash; 암스테르담 본사 기준 뉘렌베르크까지 약 6시간(기차) 또는 1.5시간(항공). 전시 기간 중 온라인 미팅 또는 별도 방문 가능.
+            </div>
+
+            <div class="questions-list">
+                <h4>&#128172; 추천 문의 내용</h4>
+                <ol>
+                    <li>전 세계 다수 팀이 <strong>동시에 동일 RAG 파이프라인</strong>에서 작업하는 구체적 협업 기능은?</li>
+                    <li>RAG 지식 베이스를 <strong>외부 조직이나 파트너와 공유</strong>하는 기능이 있는지? 접근 권한 관리 방법?</li>
+                    <li>한국어 문서의 임베딩/청킹 처리 최적화 수준?</li>
+                    <li>MCP 서버와의 연동 가능성 및 기존 엔터프라이즈 시스템 통합 방법?</li>
+                    <li>RAG 파이프라인의 버저닝/변경 관리 기능? (누가 언제 무엇을 수정했는지)</li>
+                    <li>무료 체험판 또는 개발자 플랜 제공 여부?</li>
+                </ol>
+            </div>
+
+            <div class="contact-bar">
+                <a href="https://orq.ai/contact" class="contact-link" target="_blank">&#128231; 컨택 요청</a>
+                <a href="https://orq.ai/platform/knowledge-base" class="contact-link" target="_blank">&#127760; RAG 플랫폼 상세</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vectara -->
+    <div class="company-card">
+        <div class="card-header both">
+            <div>
+                <div class="company-name">Vectara</div>
+                <div class="company-hq">미국 캘리포니아 &mdash; 시맨틱 검색 + RAG 전문</div>
+            </div>
+            <div class="badge-container">
+                <span class="badge">MCP + RAG</span>
+                <span class="badge">다국어 지원</span>
+                <span class="badge">API 우선</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="info-grid">
+                <div class="info-box reason">
+                    <h4>&#9733; 주요 선택 이유</h4>
+                    <ul>
+                        <li><strong>MCP 서버 + 시맨틱 검색 + RAG</strong>를 하나의 플랫폼에서 제공</li>
+                        <li><strong>다국어 쿼리 네이티브 지원</strong> &mdash; 한국어 포함 글로벌 협업에 유리</li>
+                        <li>자동 임베딩 생성 &mdash; 별도 임베딩 모델 관리 불필요</li>
+                        <li>API 우선 아키텍처 &mdash; 기존 시스템에 쉽게 통합</li>
+                        <li>관련성 기반 컨텍스트 전달로 LLM 응답 품질 극대화</li>
+                    </ul>
+                </div>
+                <div class="info-box solution">
+                    <h4>&#128736; 솔루션 설명</h4>
+                    <p><strong>Vectara</strong>의 MCP 서버는 시맨틱 검색과 RAG 기능에 특화되어, AI 모델에 관련성 순위가 매겨진 컨텍스트를 전달합니다.</p>
+                    <br>
+                    <p>자동 임베딩 생성, 다국어 쿼리 지원, API 우선 아키텍처를 갖추고 있어 정교한 정보 검색과 지식 관리가 필요한 엔터프라이즈에 적합합니다.</p>
+                    <br>
+                    <p>전 세계 팀이 다양한 언어로 동일한 지식 베이스를 쿼리할 수 있어, <strong>언어 장벽 없는 글로벌 RAG 협업</strong>이 가능합니다.</p>
+                </div>
+            </div>
+
+            <div class="booth-na">
+                &#9888;&#65039; <strong>Embedded World 전시 미확인</strong> &mdash; 온라인 데모 요청 또는 API 무료 체험판 활용을 추천합니다.
+            </div>
+
+            <div class="questions-list">
+                <h4>&#128172; 추천 문의 내용</h4>
+                <ol>
+                    <li>한국어-영어-독일어 혼합 문서 환경에서의 시맨틱 검색 정확도?</li>
+                    <li>MCP 서버로서의 기능 범위 &mdash; 기업 내부 데이터소스 연결 방법?</li>
+                    <li>여러 조직이 공유 RAG 파이프라인에 기여하는 멀티테넌트 구성 가능성?</li>
+                    <li>자동 임베딩 생성 모델의 한국어 성능 및 파인튜닝 옵션?</li>
+                    <li>엔터프라이즈 보안(SSO, 역할 기반 접근 제어) 지원 현황?</li>
+                </ol>
+            </div>
+
+            <div class="contact-bar">
+                <a href="https://vectara.com" class="contact-link" target="_blank">&#127760; 공식 웹사이트</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SECTION 4: ACTION PLAN ==================== -->
+    <div class="section-title"><span class="icon">&#128197;</span> 전시회 방문 추천 일정</div>
+
+    <div class="action-plan">
+        <h3>Embedded World 2026 &mdash; AI 솔루션 탐색 추천 동선</h3>
+
+        <div class="timeline-item">
+            <div class="timeline-time">Day 1 오전<br>(3/10 화)</div>
+            <div class="timeline-content">
+                <strong>Hall 4, Booth 4-358</strong> &mdash; INSIDE Industry Association 부스 방문<br>
+                DAC.digital, AITIA 담당자와 미팅. MCP 서버 기반 에이전틱 AI 솔루션 논의.<br>
+                16개 SME 파트너의 다양한 솔루션을 한 곳에서 비교.
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time">Day 1 오후<br>(3/10 화)</div>
+            <div class="timeline-content">
+                <strong>Hall 4, Stand 422</strong> &mdash; Fraunhofer ITWM 부스 방문<br>
+                NASE 시스템 시연 관람 및 엣지 AI 최적화 기술 확인.<br>
+                산업 파트너십 프로그램 및 공동 연구 가능성 문의.
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time">Day 2 오전<br>(3/11 수)</div>
+            <div class="timeline-content">
+                <strong>온라인 미팅</strong> &mdash; K2view 독일 지사 또는 CData Connect AI 데모<br>
+                MCP 서버 솔루션 심화 상담. 기업 시스템 연동 시나리오 논의.<br>
+                PoC 진행 조건 및 견적 요청.
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time">Day 2 오후<br>(3/11 수)</div>
+            <div class="timeline-content">
+                <strong>온라인 미팅</strong> &mdash; Squirro 또는 Orq.ai 데모<br>
+                Collaborative RAG 솔루션 시연 요청. 글로벌 협업 워크플로우 확인.<br>
+                다국어/한국어 지원 수준 확인.
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-time">Day 3<br>(3/12 목)</div>
+            <div class="timeline-content">
+                <strong>종합 정리 및 후속 조치</strong><br>
+                수집한 자료 종합 비교. 내부 보고서 작성.<br>
+                가장 유망한 2~3개 업체에 공식 PoC 제안 요청 발송.
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SECTION 5: KEY TRENDS ==================== -->
+    <div class="section-title"><span class="icon">&#128161;</span> 2026 핵심 트렌드 참고</div>
+
+    <div class="info-grid">
+        <div class="info-box" style="border-left-color: #e65100;">
+            <h4>MCP 시장 동향</h4>
+            <ul>
+                <li>MCP 시장 규모: <strong>$10.4B</strong> (2026 예상, CAGR 24.7%)</li>
+                <li>월간 SDK 다운로드: 100K (2024.11) → <strong>97M+</strong> (2026)</li>
+                <li>iPaaS 벤더 50%가 2026년까지 MCP 채택 (Gartner)</li>
+                <li>AI 팀의 71%가 구현 시간의 25% 이상을 데이터 통합에 소비</li>
+            </ul>
+        </div>
+        <div class="info-box" style="border-left-color: #2e7d32;">
+            <h4>RAG 시장 동향</h4>
+            <ul>
+                <li>엔터프라이즈 AI 앱의 <strong>85%</strong>가 RAG을 기반 아키텍처로 사용 (2026 예상)</li>
+                <li>산업 컨소시엄 기반 <strong>공유 지식 그래프</strong> 형성 가속화</li>
+                <li>GraphRAG 검색 정밀도 <strong>최대 99%</strong> 달성</li>
+                <li>프라이버시 보존 컴퓨팅(동형암호, MPC) 프로덕션 단계 진입</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<div class="footer">
+    <p>본 문서는 Embedded World 2026 뉘렌베르크 전시회 참관을 위해 작성되었습니다.</p>
+    <p>작성일: 2026년 3월 11일 | AI MCP 서버 &amp; Collaborative RAG 솔루션 업체 가이드</p>
+    <p style="margin-top: 8px; font-size: 0.85em;">
+        참고: 전시 부스 정보는 조사 시점 기준이며, 실제 위치는 현장에서 확인해 주세요.<br>
+        공식 전시업체 검색: <a href="https://www.embedded-world.de/en/exhibitors-products/find-exhibitors" target="_blank">embedded-world.de</a>
+    </p>
+</div>
+
+</body>
+</html>
